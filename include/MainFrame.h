@@ -1,4 +1,7 @@
+#include <memory>
 #include <wx/wx.h>
+#include "TableFrame.h"
+#include "DBService.h"
 
 class MainFrame : public wxFrame
 {
@@ -8,13 +11,36 @@ public:
 
 private:
 
-    void OnHello(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
+    // GUI ELEMENTS
+
+    std::unique_ptr<wxPanel> _panel;
+
+    std::unique_ptr<wxButton> _hufceButton;
+    std::unique_ptr<wxButton> _druzynyButton;
+    std::unique_ptr<wxButton> _instruktorzyButton;
+    std::unique_ptr<wxButton> _okresyButton;
+    std::unique_ptr<wxButton> _wplatyButton;
+    std::unique_ptr<wxButton> _raportyButton;
+    std::unique_ptr<wxButton> _resetBazyButton;
+    std::unique_ptr<wxButton> _resetWplatButton;
+
+    // CHILD FRAMES
+
+    std::unique_ptr<TableFrame> _hufceFrame;
+    std::unique_ptr<TableFrame> _instruktorzyFrame;
+
+private:
+
+    enum class ID
+    {
+        HUFCE = 1, DRUZYNY, INSTRUKTORZY, OKRESY,
+        WPLATY, RAPORTY, RESET_BAZY, RESET_WPLAT
+    };
+
+private:
+
+    void onHufce(wxCommandEvent & event);
+    void onInstruktorzy(wxCommandEvent & event);
 
 };
 
-enum
-{
-    ID_Hello = 1
-};
