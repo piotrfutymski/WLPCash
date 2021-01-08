@@ -22,7 +22,8 @@ MainFrame::MainFrame()
     //EVENTS
 
     Connect(wxWindowID(ID::HUFCE), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onHufce));
-    Connect(wxWindowID(ID::INSTRUKTORZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onInstruktorzy));
+    Connect(wxWindowID(ID::DRUZYNY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onDruzyny));
+    Connect(wxWindowID(ID::INSTRUKTORZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onInstruktorzy)); 
 
     //FRAMES
 
@@ -33,29 +34,63 @@ MainFrame::MainFrame()
         _hufiecForm->reload();
     });
 
-    _hufiecForm = std::make_unique<HufiecForm>(wxWindowID(ID::HUFCE)+10000);
+    _hufiecForm = std::make_unique<HufiecForm>(wxWindowID(ID::HUFCE)+2000);
+
+    _druzynyFrame = std::make_unique<TableFrame>(std::string("Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
+    std::vector<std::pair<std::string, int>>({{"Nazwa", 100},{"Numer",70},{"Czy probna",80},{"Patron",200},{"Druzynowy",180},{"Hufiec",100},{"Typ",100}}));
+    _druzynyFrame->setOnAdd([&](){
+        if(!_druzynaForm->isOpened())
+            _druzynaForm->Show();
+        _druzynaForm->reload();
+    });
+
+    _druzynaForm = std::make_unique<DruzynaForm>(wxWindowID(ID::DRUZYNY)+2000);
 
     _instruktorzyFrame = std::make_unique<TableFrame>(std::string("Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
     std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"E-mail",200},{"Rozkaz",100},{"St. instr.",100},{"St. harcerski",100},{"Hufiec",100}}), TableFrame::TableStyle::Special);
+    _instruktorzyFrame->setOnAdd([&](){
+        if(!_instruktorForm->isOpened())
+            _instruktorForm->Show();
+        _instruktorForm->reload();
+    });
+    _instruktorzyFrame->setOnSpec([&](const std::vector<std::string> & instr){
+        if(!_stanyInstruktoraFrame->isOpened())
+            _stanyInstruktoraFrame->Show();
+        _stanyInstruktoraFrame->reload();
+        _stanyInstruktoraFrame->SetTitle("Stany instruktora: " + instr[1] + " " +instr[2]);
+    });
+
+    _instruktorForm = std::make_unique<InstruktorForm>(wxWindowID(ID::INSTRUKTORZY)+2000);
+
+
+    _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
+    std::vector<std::pair<std::string,int>>({{"Nazwa",100},{"Data rozp.",100},{"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
+
+    
+
 }
 
 void MainFrame::onHufce(wxCommandEvent& WXUNUSED(event))
 {
-    if(!_hufceFrame->isOpened())     
-        _hufceFrame->Show();
+    openTable("hufce", _hufceFrame);
+}
 
-    DBService testService;
-    _hufceFrame->fillData(testService.getHufceData());
-    _hufceFrame->reload();
+void MainFrame::onDruzyny(wxCommandEvent & event)
+{
+    openTable("druzyny", _druzynyFrame);
 }
 
 void MainFrame::onInstruktorzy(wxCommandEvent& WXUNUSED(event))
 {
-    if(!_instruktorzyFrame->isOpened())
-        _instruktorzyFrame->Show();
+    openTable("instruktorzy", _instruktorzyFrame);
+}
 
-    DBService testService;     
-    _instruktorzyFrame->fillData(testService.getInstruktorzyData());
-    _instruktorzyFrame->reload();
+void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
+{
+    if(!frame->isOpened())     
+        frame->Show();
 
+    DBService testService;
+    frame->fillData(testService.getData(name));
+    frame->reload();
 }

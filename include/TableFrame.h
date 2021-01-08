@@ -19,9 +19,9 @@ public:
     virtual void reload();
 
     void setOnAdd(const std::function<void()> & f);
-    void setOnModify(const std::function<void(int)> & f);
-    void setOnDel(const std::function<void(int)> & f);
-    void setOnSpec(const std::function<void(int)> & f);
+    void setOnModify(const std::function<void(const std::vector<std::string> &)> & f);
+    void setOnDel(const std::function<void(const std::vector<std::string> &)> & f);
+    void setOnSpec(const std::function<void(const std::vector<std::string> &)> & f);
     void setOnGetRaport(const std::function<void()> & f);
     void setOnGetEmail(const std::function<void()> & f);
 
@@ -39,6 +39,9 @@ private:
     std::unique_ptr<wxButton> _deleteButton[10];
     std::unique_ptr<wxButton> _modifyButton[10];
     std::unique_ptr<wxButton> _specialButton[10];
+
+    std::unique_ptr<wxButton> _raportButton;
+    std::unique_ptr<wxButton> _emailButton;
 
     std::vector<std::unique_ptr<wxStaticText>> _labels;
     
@@ -59,9 +62,9 @@ private:
     // functions
 
     std::function<void()> _onAdd;
-    std::function<void(int)> _onModify;
-    std::function<void(int)> _onDelete;
-    std::function<void(int)> _onSpecial;
+    std::function<void(const std::vector<std::string> &)> _onModify;
+    std::function<void(const std::vector<std::string> &)> _onDelete;
+    std::function<void(const std::vector<std::string> &)> _onSpecial;
     std::function<void()> _onGetRaport;
     std::function<void()> _onGetEmail;
 
@@ -69,15 +72,15 @@ private:
 
     enum class ID
     {
-        PREV = 1, NEXT, ADD, DELETE = 100, MODIFY = 200, SPECIAL=300, LABELS=400
+        PREV = 1, NEXT, ADD, RAPORT, EMAIL, DELETE = 100, MODIFY = 200, SPECIAL=300, LABELS=400
     };
 
 private:
 
     void onAdd(wxCommandEvent & event);
-    void onModify(wxCommandEvent & event);
-    void onDelete(wxCommandEvent & event);
-    void onSpecial(wxCommandEvent & event);
+    void onModify(int n);
+    void onDelete(int n);
+    void onSpecial(int n);
     void onGetReport(wxCommandEvent & event);
     void onGetEmail(wxCommandEvent & event);
 

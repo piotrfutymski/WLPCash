@@ -14,9 +14,12 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
     _nextButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::NEXT), wxT("następne"), wxPoint(20,460), wxSize(60,20));
     _nextButton->SetFont(smallFont);
 
-    _addButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::ADD), wxT("DODAJ"), wxPoint(100,460), wxSize(len,30));
+    if(_style == TableStyle::Special || _style == TableStyle::None || _style == TableStyle::OnlyLast)
+        _addButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::ADD), wxT("DODAJ"), wxPoint(100,460), wxSize(len,30));
 
     _pageInfo = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, "0-0", wxPoint(20,10), wxSize(60,20));
+
+    _raportButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::RAPORT), wxT("RAPORT"), wxPoint(100+len+100,470), wxSize(90,30));
 
     int px = 100;
 
@@ -34,8 +37,10 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
     for(int i = 0; i < 10; i++)
     {
         _rows[i] = std::make_unique<wxTextCtrl>(_panel.get(), wxID_ANY, wxT(""), wxPoint(100, py+40*i), wxSize(len, 30), wxTE_READONLY);
-        _deleteButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::DELETE) + i, wxT("DEL"), wxPoint(100+len+80,py+40*i), wxSize(50,30));
-        _modifyButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::MODIFY) + i, wxT("MODIFY"), wxPoint(100+len+10,py+40*i), wxSize(60,30));
+        if(_style == TableStyle::Special || _style == TableStyle::None || _style == TableStyle::OnlyLast)
+            _deleteButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::DELETE) + i, wxT("DEL"), wxPoint(100+len+80,py+40*i), wxSize(50,30));
+        if(_style == TableStyle::Special || _style == TableStyle::None)
+            _modifyButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::MODIFY) + i, wxT("MODIFY"), wxPoint(100+len+10,py+40*i), wxSize(60,30));
         if(_style == TableStyle::Special)
             _specialButton[i] = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::SPECIAL) + i, wxT("STAN"), wxPoint(100+len+140,py+40*i), wxSize(50,30));
     }
@@ -43,6 +48,13 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(TableFrame::close));
 
     Connect(wxWindowID(ID::ADD), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onAdd));
+
+    for(int i = 0; i < 10; i++ )
+    {
+        Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, i]( wxCommandEvent &){
+            this->onSpecial(i);
+        }, wxWindowID(ID::SPECIAL) + i);
+    }
 
 }
 
@@ -93,17 +105,17 @@ void TableFrame::setOnAdd(const std::function<void()> & f)
     _onAdd = f;
 }
 
-void TableFrame::setOnModify(const std::function<void(int)> & f)
+void TableFrame::setOnModify(const std::function<void(const std::vector<std::string> &)> & f)
 {
     _onModify = f;
 }
 
-void TableFrame::setOnDel(const std::function<void(int)> & f)
+void TableFrame::setOnDel(const std::function<void(const std::vector<std::string> &)> & f)
 {
     _onDelete = f;
 }
 
-void TableFrame::setOnSpec(const std::function<void(int)> & f)
+void TableFrame::setOnSpec(const std::function<void(const std::vector<std::string> &)> & f)
 {
     _onSpecial = f;
 }
@@ -123,5 +135,13 @@ void TableFrame::onAdd(wxCommandEvent& WXUNUSED(event))
     if(_onAdd)
     {
         _onAdd();
+    }
+}
+
+void TableFrame::onSpecial(int n)
+{
+    if(_onSpecial && _data.size() > _page*10 + n)
+    {
+        _onSpecial(_data[_page*10 + n]);
     }
 }

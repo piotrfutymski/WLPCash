@@ -1,6 +1,8 @@
 #pragma once
 #include "TableFrame.h"
 #include "HufiecForm.h"
+#include "DruzynaForm.h"
+#include "InstruktorForm.h"
 #include "DBService.h"
 
 class MainFrame : public wxFrame
@@ -29,7 +31,13 @@ private:
     std::unique_ptr<TableFrame> _hufceFrame;
     std::unique_ptr<HufiecForm> _hufiecForm;
 
+    std::unique_ptr<TableFrame> _druzynyFrame;
+    std::unique_ptr<DruzynaForm> _druzynaForm;
+
     std::unique_ptr<TableFrame> _instruktorzyFrame;
+    std::unique_ptr<InstruktorForm> _instruktorForm;
+
+    std::unique_ptr<TableFrame> _stanyInstruktoraFrame;
 
 private:
 
@@ -43,6 +51,9 @@ private:
 
     void onHufce(wxCommandEvent & event);
     void onInstruktorzy(wxCommandEvent & event);
+    void onDruzyny(wxCommandEvent & event);
+
+    void openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame);
 
 };
 
