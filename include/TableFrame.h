@@ -1,6 +1,7 @@
 #include <memory>
 #include <vector>
 #include <wx/wx.h>
+#undef DELETE
 
 class TableFrame : public wxFrame
 {

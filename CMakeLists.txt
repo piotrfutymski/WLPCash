@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(WLPCash VERSION 0.1.0)
 
+if(WIN32)
+	set(wxWidgets_ROOT_DIR C:/Users/Jakub/source/lib/wxWidgets-3.1.4)
+	set(wxWidgets_LIB_DIR C:/Users/Jakub/source/lib/wxWidgets-3.1.4/lib/vc_x64_lib)
+	set(wxWidgets_CONFIGURATION mswud)
+endif()
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 
 include_directories("include")
 
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "include/*.h" )
-
 
 include(CTest)
 include( "${wxWidgets_USE_FILE}" )
