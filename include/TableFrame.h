@@ -1,22 +1,29 @@
-#include <memory>
-#include <vector>
-#include <wx/wx.h>
+#pragma once
+#include <functional>
+#include "PopUpFrame.h"
 #undef DELETE
 
-class TableFrame : public wxFrame
+class TableFrame : public PopUpFrame
 {
 public:
 
-    TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, bool specialButton = false);
+    enum class TableStyle
+    {
+        None, Special, OnlyLast, Raport, Raport_Mail
+    };
 
-    bool isOpened()const;
+    TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, const TableStyle & style = TableStyle::None);
 
     void fillData(const std::vector<std::vector<std::string>> & data);
 
-    void reload();
+    virtual void reload();
 
-    bool Show();
-
+    void setOnAdd(const std::function<void()> & f);
+    void setOnModify(const std::function<void(int)> & f);
+    void setOnDel(const std::function<void(int)> & f);
+    void setOnSpec(const std::function<void(int)> & f);
+    void setOnGetRaport(const std::function<void()> & f);
+    void setOnGetEmail(const std::function<void()> & f);
 
 
 private:
@@ -44,7 +51,19 @@ private:
     std::vector<std::vector<std::string>> _data;
     std::vector<std::pair<std::string, int>> _labelData;
     int _page = 0;
-    bool _isOpened = false;
+
+    // style
+
+    TableStyle _style;
+
+    // functions
+
+    std::function<void()> _onAdd;
+    std::function<void(int)> _onModify;
+    std::function<void(int)> _onDelete;
+    std::function<void(int)> _onSpecial;
+    std::function<void()> _onGetRaport;
+    std::function<void()> _onGetEmail;
 
 private:
 
@@ -55,6 +74,11 @@ private:
 
 private:
 
-    void close(wxCommandEvent & event);
+    void onAdd(wxCommandEvent & event);
+    void onModify(wxCommandEvent & event);
+    void onDelete(wxCommandEvent & event);
+    void onSpecial(wxCommandEvent & event);
+    void onGetReport(wxCommandEvent & event);
+    void onGetEmail(wxCommandEvent & event);
 
 };

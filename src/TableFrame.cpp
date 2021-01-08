@@ -1,8 +1,8 @@
 #include "TableFrame.h"
 
 
-TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, bool specialButton)
-    : wxFrame(NULL, ID, name, wxDefaultPosition, wxSize(310+len, 510+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _labelData(labelData)
+TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, const TableStyle & style)
+    : PopUpFrame(NULL, ID, name, wxDefaultPosition, wxSize(310+len, 510+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _labelData(labelData), _style(style)
 {
     _panel = std::make_unique<wxPanel>(this, -1);
     wxFont smallFont(7, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -36,17 +36,14 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
         _rows[i] = std::make_unique<wxTextCtrl>(_panel.get(), wxID_ANY, wxT(""), wxPoint(100, py+40*i), wxSize(len, 30), wxTE_READONLY);
         _deleteButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::DELETE) + i, wxT("DEL"), wxPoint(100+len+80,py+40*i), wxSize(50,30));
         _modifyButton[i] =  std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::MODIFY) + i, wxT("MODIFY"), wxPoint(100+len+10,py+40*i), wxSize(60,30));
-        if(specialButton)
+        if(_style == TableStyle::Special)
             _specialButton[i] = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::SPECIAL) + i, wxT("STAN"), wxPoint(100+len+140,py+40*i), wxSize(50,30));
     }
 
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(TableFrame::close));
 
-}
+    Connect(wxWindowID(ID::ADD), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onAdd));
 
-bool TableFrame::isOpened()const
-{
-    return _isOpened;
 }
 
 void TableFrame::fillData(const std::vector<std::vector<std::string>> & data)
@@ -90,14 +87,41 @@ void TableFrame::reload()
     }
 }
 
-bool TableFrame::Show()
+
+void TableFrame::setOnAdd(const std::function<void()> & f)
 {
-    _isOpened = true;
-    return wxFrame::Show();
+    _onAdd = f;
 }
 
-void TableFrame::close(wxCommandEvent& WXUNUSED(event))
+void TableFrame::setOnModify(const std::function<void(int)> & f)
 {
-    _isOpened = false;
-    wxFrame::Hide();
+    _onModify = f;
+}
+
+void TableFrame::setOnDel(const std::function<void(int)> & f)
+{
+    _onDelete = f;
+}
+
+void TableFrame::setOnSpec(const std::function<void(int)> & f)
+{
+    _onSpecial = f;
+}
+
+void TableFrame::setOnGetRaport(const std::function<void()> & f)
+{
+    _onGetRaport = f;
+}
+
+void TableFrame::setOnGetEmail(const std::function<void()> & f)
+{
+    _onGetEmail = f;
+}
+
+void TableFrame::onAdd(wxCommandEvent& WXUNUSED(event))
+{
+    if(_onAdd)
+    {
+        _onAdd();
+    }
 }

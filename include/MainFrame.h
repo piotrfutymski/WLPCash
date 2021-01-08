@@ -1,6 +1,6 @@
-#include <memory>
-#include <wx/wx.h>
+#pragma once
 #include "TableFrame.h"
+#include "HufiecForm.h"
 #include "DBService.h"
 
 class MainFrame : public wxFrame
@@ -27,6 +27,8 @@ private:
     // CHILD FRAMES
 
     std::unique_ptr<TableFrame> _hufceFrame;
+    std::unique_ptr<HufiecForm> _hufiecForm;
+
     std::unique_ptr<TableFrame> _instruktorzyFrame;
 
 private:

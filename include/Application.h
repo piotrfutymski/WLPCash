@@ -1,3 +1,4 @@
+#pragma once
 #include "MainFrame.h"
 
 class Application : public wxApp
