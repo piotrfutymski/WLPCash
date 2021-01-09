@@ -12,7 +12,7 @@ InstruktorForm::InstruktorForm(int ID)
     _stopienInstrLabel = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Stopień instruktorski:"), wxPoint(20,250), wxSize(200,30));
     _stopienHarcLabel = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Stopień harcerski:"), wxPoint(20,340), wxSize(200,30));
     _hufiecLabel = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Hufiec:"), wxPoint(20,430), wxSize(200,30));
-    _dataLabel = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Data (dd-mm-yyyy):"), wxPoint(20,550), wxSize(200,30));
+    _dataLabel = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Data rozkazu (dd-mm-yyyy):"), wxPoint(20,550), wxSize(200,30));
 
     _imieInput = std::make_unique<wxTextCtrl>(_panel.get(), wxWindowID(ID::IMIE), wxT(""), wxPoint(200,50), wxSize(300,30));
     _nazwiskoInput = std::make_unique<wxTextCtrl>(_panel.get(), wxWindowID(ID::NAZWISKO), wxT(""), wxPoint(200,100), wxSize(300,30));

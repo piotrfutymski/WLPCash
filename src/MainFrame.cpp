@@ -65,7 +65,14 @@ MainFrame::MainFrame()
 
     _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
     std::vector<std::pair<std::string,int>>({{"Nazwa",100},{"Data rozp.",100},{"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
+    _stanyInstruktoraFrame->setOnAdd([&](){
+        if(!_statusInstruktoraForm->isOpened())
+            _statusInstruktoraForm->Show();
+        _statusInstruktoraForm->reload();
+    });
 
+
+    _statusInstruktoraForm = std::make_unique<StatusForm>(wxWindowID(ID::INSTRUKTORZY)+4000);
     
 
 }

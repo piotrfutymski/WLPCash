@@ -3,6 +3,7 @@
 #include "HufiecForm.h"
 #include "DruzynaForm.h"
 #include "InstruktorForm.h"
+#include "StatusForm.h"
 #include "DBService.h"
 
 class MainFrame : public wxFrame
@@ -38,6 +39,7 @@ private:
     std::unique_ptr<InstruktorForm> _instruktorForm;
 
     std::unique_ptr<TableFrame> _stanyInstruktoraFrame;
+    std::unique_ptr<StatusForm> _statusInstruktoraForm;
 
 private:
 
