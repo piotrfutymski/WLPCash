@@ -23,7 +23,8 @@ MainFrame::MainFrame()
 
     Connect(wxWindowID(ID::HUFCE), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onHufce));
     Connect(wxWindowID(ID::DRUZYNY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onDruzyny));
-    Connect(wxWindowID(ID::INSTRUKTORZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onInstruktorzy)); 
+    Connect(wxWindowID(ID::INSTRUKTORZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onInstruktorzy));
+    Connect(wxWindowID(ID::OKRESY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onOkresy));  
 
     //FRAMES
 
@@ -71,8 +72,17 @@ MainFrame::MainFrame()
         _statusInstruktoraForm->reload();
     });
 
-
     _statusInstruktoraForm = std::make_unique<StatusForm>(wxWindowID(ID::INSTRUKTORZY)+4000);
+
+    _okresyFrame = std::make_unique<TableFrame>(std::string("Okresy skladkowe"), 400, wxWindowID(ID::OKRESY)+1000,
+    std::vector<std::pair<std::string,int>>({{"Poczatek okresu",150},{"Koniec okresu",150},{"Kwota",100}}), TableFrame::TableStyle::OnlyLast);
+    _okresyFrame->setOnAdd([&](){
+        if(!_okresForm->isOpened())
+            _okresForm->Show();
+        _okresForm->reload();
+    });
+
+    _okresForm = std::make_unique<OkresForm>(wxWindowID(ID::OKRESY)+2000);
     
 
 }
@@ -91,6 +101,12 @@ void MainFrame::onInstruktorzy(wxCommandEvent& WXUNUSED(event))
 {
     openTable("instruktorzy", _instruktorzyFrame);
 }
+
+void MainFrame::onOkresy(wxCommandEvent & event)
+{
+    openTable("okresy", _okresyFrame);
+}
+
 
 void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
 {

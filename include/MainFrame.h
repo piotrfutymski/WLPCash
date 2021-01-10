@@ -4,6 +4,7 @@
 #include "DruzynaForm.h"
 #include "InstruktorForm.h"
 #include "StatusForm.h"
+#include "OkresForm.h"
 #include "DBService.h"
 
 class MainFrame : public wxFrame
@@ -41,6 +42,9 @@ private:
     std::unique_ptr<TableFrame> _stanyInstruktoraFrame;
     std::unique_ptr<StatusForm> _statusInstruktoraForm;
 
+    std::unique_ptr<TableFrame> _okresyFrame;
+    std::unique_ptr<OkresForm>  _okresForm;
+
 private:
 
     enum class ID
@@ -54,6 +58,7 @@ private:
     void onHufce(wxCommandEvent & event);
     void onInstruktorzy(wxCommandEvent & event);
     void onDruzyny(wxCommandEvent & event);
+    void onOkresy(wxCommandEvent & event);
 
     void openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame);
 

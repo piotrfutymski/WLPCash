@@ -36,4 +36,15 @@ std::vector<std::vector<std::string>> DBService::getData(const std::string & s)
         return res;
     }
 
+    if(s == "okresy")
+    {
+        std::vector<std::vector<std::string>> res;
+        res.push_back({"01-2000","12-2018", "0"});
+        res.push_back({"01-2019","12-2019", "15"});
+        res.push_back({"01-2020","", "16"});
+        return res;
+    }
+
+    return {{}};
+
 }
