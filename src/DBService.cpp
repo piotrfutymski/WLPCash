@@ -2,18 +2,7 @@
 
 void DBService::init()
 {
-    otl_connect::otl_initialize();
-    try
-    {
-        std::string strConn = "DRIVER={Oracle ODBC 5.2 ANSI Driver};SERVER=admlab2.cs.put.poznan.pl;PORT=1521;DATABASE=dblab02_students;USER=inf141216;PASSWORD=inf141216;";
-        db.rlogon(strConn.c_str());
 
-        //otl_cursor::direct_exec(db, "drop table temp", otl_exception::disabled);
-    }
-    catch (otl_exception& e)
-    {
-        // Error
-    }
 }
 
 void DBService::close()

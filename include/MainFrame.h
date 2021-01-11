@@ -19,7 +19,7 @@ public:
 
 private:
     //DATABASE OBJECT
-    //DBService _db;
+    DBService _db;
 
     // GUI ELEMENTS
 
