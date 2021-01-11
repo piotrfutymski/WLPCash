@@ -18,6 +18,8 @@ public:
     MainFrame();
 
 private:
+    //DATABASE OBJECT
+    //DBService _db;
 
     // GUI ELEMENTS
 

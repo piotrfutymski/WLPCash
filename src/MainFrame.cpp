@@ -3,6 +3,8 @@
 MainFrame::MainFrame()
     : wxFrame(NULL, wxID_ANY, "WLP Cash", wxDefaultPosition, {280,440}, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
+    //_db.init();
+
     _panel = std::make_unique<wxPanel>(this, -1);
 
     wxSize normalButtonSize = {240,50};
