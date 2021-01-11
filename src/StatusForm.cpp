@@ -1,7 +1,7 @@
 #include "StatusForm.h"
 
 StatusForm::StatusForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz statusu instruktora"), wxDefaultPosition, wxSize(560, 220+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+    : PopUpFrame(NULL, ID, wxT("Formularz statusu instruktora"), wxDefaultPosition, wxSize(580, 220+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 

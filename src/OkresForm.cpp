@@ -1,7 +1,7 @@
 #include "OkresForm.h"
 
 OkresForm::OkresForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz okresu składkowego"), wxDefaultPosition, wxSize(560, 180+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+    : PopUpFrame(NULL, ID, wxT("Formularz okresu składkowego"), wxDefaultPosition, wxSize(580, 180+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 

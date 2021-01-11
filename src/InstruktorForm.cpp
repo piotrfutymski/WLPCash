@@ -1,7 +1,7 @@
 #include "InstruktorForm.h"
 
 InstruktorForm::InstruktorForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz instruktora"), wxDefaultPosition, wxSize(560, 630+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+    : PopUpFrame(NULL, ID, wxT("Formularz instruktora"), wxDefaultPosition, wxSize(580, 630+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 

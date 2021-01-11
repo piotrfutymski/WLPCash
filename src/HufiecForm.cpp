@@ -2,7 +2,7 @@
 
 
 HufiecForm::HufiecForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz hufca"), wxDefaultPosition, wxSize(560, 250+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+    : PopUpFrame(NULL, ID, wxT("Formularz hufca"), wxDefaultPosition, wxSize(580, 250+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 
