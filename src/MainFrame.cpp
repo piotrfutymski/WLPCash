@@ -25,6 +25,9 @@ MainFrame::MainFrame()
     Connect(wxWindowID(ID::DRUZYNY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onDruzyny));
     Connect(wxWindowID(ID::INSTRUKTORZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onInstruktorzy));
     Connect(wxWindowID(ID::OKRESY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onOkresy));  
+    Connect(wxWindowID(ID::WPLATY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onWplaty)); 
+    Connect(wxWindowID(ID::RAPORTY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onRaporty)); 
+    Connect(wxWindowID(ID::RESET_BAZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onResetBazy)); 
 
     //FRAMES
 
@@ -83,7 +86,48 @@ MainFrame::MainFrame()
     });
 
     _okresForm = std::make_unique<OkresForm>(wxWindowID(ID::OKRESY)+2000);
+
+    _chooseWplatyFrame = std::make_unique<ChooseWplatyFrame>(wxWindowID(ID::WPLATY)+1000);
+    _chooseWplatyFrame->setOnAll([&](){
+        openTable("wplaty", _wplatyFrame);
+    });
+
+    _wplatyFrame = std::make_unique<TableFrame>(std::string("Wplaty"), 400, wxWindowID(ID::WPLATY)+2000,
+    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"Kwota",100}, {"Data",100}}));
+    _wplatyFrame->setOnAdd([&](){
+        if(!_wplataForm->isOpened())
+            _wplataForm->Show();
+        _wplataForm->reload();
+    });
+
+    _wplataForm = std::make_unique<WplataForm>(wxWindowID(ID::WPLATY)+3000);
+
+
+    _raportyFrame = std::make_unique<RaportyFrame>(wxWindowID(ID::RAPORTY)+1000);
+    _raportyFrame->setOnGenerate([&](){
+        openPopUp(_raportWplatIndFrame.get());
+    }, 0);
+    _raportyFrame->setOnGenerate([&](){
+        openPopUp(_raportWplatHufFrame.get());
+    }, 1);
+    _raportyFrame->setOnGenerate([&](){
+        openPopUp(_raportUzupelnienFrame.get());
+    }, 2);
+
+
+    _raportWplatIndFrame = std::make_unique<TableFrame>(std::string("Raport wpłat indywidualnych"), 650, wxWindowID(ID::RAPORTY)+2000,
+    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"E-Mail",150}, {"St. instr.",100}, {"Hufiec", 100}, {"SUMA [zl]", 100}}), TableFrame::TableStyle::Raport);
+
+    _raportWplatHufFrame = std::make_unique<TableFrame>(std::string("Raport wpłat w hufcach"), 200, wxWindowID(ID::RAPORTY)+3000,
+    std::vector<std::pair<std::string,int>>({{"Nazwa",100}, {"SUMA [zl]", 100}}), TableFrame::TableStyle::Raport);
+
+    _raportUzupelnienFrame = std::make_unique<TableFrame>(std::string("Raport opóźnień"), 700, wxWindowID(ID::RAPORTY)+4000,
+    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"E-Mail",150}, {"St. instr.",100}, {"Hufiec", 100}, {"Do kiedy oplacono", 150}}), TableFrame::TableStyle::Raport);
+
     
+    _resetFrame = std::make_unique<ResetFrame>(wxWindowID(ID::RESET_BAZY)+1000);
+
+
 
 }
 
@@ -107,13 +151,69 @@ void MainFrame::onOkresy(wxCommandEvent & event)
     openTable("okresy", _okresyFrame);
 }
 
+void MainFrame::onWplaty(wxCommandEvent & event)
+{
+    this->closeAll();
+    openPopUp(_chooseWplatyFrame.get());
+}
+
+void MainFrame::onRaporty(wxCommandEvent & event)
+{
+    this->closeAll();
+    openPopUp(_raportyFrame.get());
+}
+
+void MainFrame::onResetBazy(wxCommandEvent & event)
+{
+    this->closeAll();
+    openPopUp(_resetFrame.get());
+}
+
 
 void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
 {
+    this->closeAll();
     if(!frame->isOpened())     
         frame->Show();
 
     DBService testService;
     frame->fillData(testService.getData(name));
     frame->reload();
+}
+
+void MainFrame::openPopUp(PopUpFrame * frame)
+{
+    if(!frame->isOpened())
+            frame->Show();
+    
+    frame->reload();
+}
+
+void MainFrame::closeAll()
+{
+    _hufceFrame->Close();
+    _hufiecForm->Close();
+
+    _druzynyFrame->Close();
+    _druzynaForm->Close();
+
+    _instruktorzyFrame->Close();
+    _instruktorForm->Close();
+
+    _stanyInstruktoraFrame->Close();
+    _statusInstruktoraForm->Close();
+
+    _okresyFrame->Close();
+    _okresForm->Close();
+
+    _chooseWplatyFrame->Close();
+    _wplatyFrame->Close();
+    _wplataForm->Close();
+
+    _raportyFrame->Close();
+    _raportWplatIndFrame->Close();
+    _raportWplatHufFrame->Close();
+    _raportUzupelnienFrame->Close();
+
+    _resetFrame->Close();
 }

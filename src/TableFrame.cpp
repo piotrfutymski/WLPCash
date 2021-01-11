@@ -19,7 +19,7 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
 
     _pageInfo = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, "0-0", wxPoint(20,10), wxSize(60,20));
 
-    _raportButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::RAPORT), wxT("RAPORT"), wxPoint(100+len+100,470), wxSize(90,30));
+    _raportButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::RAPORT), wxT("ZAPISZ"), wxPoint(100+len+100,470), wxSize(90,30));
 
     int px = 100;
 

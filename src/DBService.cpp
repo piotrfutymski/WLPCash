@@ -45,6 +45,14 @@ std::vector<std::vector<std::string>> DBService::getData(const std::string & s)
         return res;
     }
 
+    if(s == "wplaty")
+    {
+        std::vector<std::vector<std::string>> res;
+        res.push_back({"Jan","Kowalski", "120", "15-03-2020"});
+        res.push_back({"Adam","Kasprzak", "180", "29-04-2020"});
+        return res;
+    }
+
     return {{}};
 
 }

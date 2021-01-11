@@ -5,6 +5,10 @@
 #include "InstruktorForm.h"
 #include "StatusForm.h"
 #include "OkresForm.h"
+#include "ChooseWplatyFrame.h"
+#include "WplataForm.h"
+#include "RaportyFrame.h"
+#include "ResetFrame.h"
 #include "DBService.h"
 
 class MainFrame : public wxFrame
@@ -45,6 +49,17 @@ private:
     std::unique_ptr<TableFrame> _okresyFrame;
     std::unique_ptr<OkresForm>  _okresForm;
 
+    std::unique_ptr<ChooseWplatyFrame> _chooseWplatyFrame;
+    std::unique_ptr<TableFrame> _wplatyFrame;
+    std::unique_ptr<WplataForm> _wplataForm;
+
+    std::unique_ptr<RaportyFrame> _raportyFrame;
+    std::unique_ptr<TableFrame> _raportWplatIndFrame;
+    std::unique_ptr<TableFrame> _raportWplatHufFrame;
+    std::unique_ptr<TableFrame> _raportUzupelnienFrame;
+
+    std::unique_ptr<ResetFrame> _resetFrame;
+
 private:
 
     enum class ID
@@ -59,8 +74,14 @@ private:
     void onInstruktorzy(wxCommandEvent & event);
     void onDruzyny(wxCommandEvent & event);
     void onOkresy(wxCommandEvent & event);
+    void onWplaty(wxCommandEvent & event);
+    void onRaporty(wxCommandEvent & event);
+    void onResetBazy(wxCommandEvent & event);
 
     void openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame);
+    void openPopUp(PopUpFrame * frame);
+
+    void closeAll();
 
 };
 
