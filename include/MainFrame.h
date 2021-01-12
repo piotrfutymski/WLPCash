@@ -85,5 +85,9 @@ private:
 
     void closeAll();
 
+private:
+
+    void close(wxCommandEvent & event);
+
 };
 

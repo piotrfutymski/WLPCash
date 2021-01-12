@@ -1,7 +1,7 @@
 #include "MainFrame.h"
 
 MainFrame::MainFrame()
-    : wxFrame(NULL, wxID_ANY, "WLP Cash", wxDefaultPosition, {280,440}, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+    : wxFrame(NULL, 9912, "WLP Cash", wxDefaultPosition, {280,440}, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
     _db.init();
 
@@ -30,6 +30,8 @@ MainFrame::MainFrame()
     Connect(wxWindowID(ID::WPLATY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onWplaty)); 
     Connect(wxWindowID(ID::RAPORTY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onRaporty)); 
     Connect(wxWindowID(ID::RESET_BAZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onResetBazy)); 
+
+    Connect(9912, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(MainFrame::close));
 
     //FRAMES
 
@@ -174,12 +176,9 @@ void MainFrame::onResetBazy(wxCommandEvent & event)
 
 void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
 {
-    this->closeAll();
-    if(!frame->isOpened())     
-        frame->Show();
-
-    DBService testService;
-    frame->fillData(testService.getData(name));
+    this->closeAll();    
+    frame->Show();
+    frame->fillData(_db.getTableData(name));
     frame->reload();
 }
 
@@ -218,4 +217,10 @@ void MainFrame::closeAll()
     _raportUzupelnienFrame->Close();
 
     _resetFrame->Close();
+}
+
+void MainFrame::close(wxCommandEvent & event)
+{
+    _db.close();
+    wxFrame::Destroy();
 }

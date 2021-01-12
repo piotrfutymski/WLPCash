@@ -45,15 +45,29 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
             _specialButton[i] = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::SPECIAL) + i, wxT("STAN"), wxPoint(100+len+140,py+40*i), wxSize(50,30));
     }
 
-    Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(TableFrame::close));
+    //EVENTS
 
+    Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(TableFrame::close));
     Connect(wxWindowID(ID::ADD), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onAdd));
+    Connect(wxWindowID(ID::NEXT), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onNext));
+    Connect(wxWindowID(ID::PREV), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onPrevious));
+    Connect(wxWindowID(ID::RAPORT), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TableFrame::onRaport));
+
+
 
     for(int i = 0; i < 10; i++ )
     {
         Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, i]( wxCommandEvent &){
             this->onSpecial(i);
         }, wxWindowID(ID::SPECIAL) + i);
+
+        Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, i]( wxCommandEvent &){
+            this->onDelete(i);
+        }, wxWindowID(ID::DELETE) + i);
+
+        Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, i]( wxCommandEvent &){
+            this->onModify(i);
+        }, wxWindowID(ID::MODIFY) + i);
     }
 
 }
@@ -65,38 +79,7 @@ void TableFrame::fillData(const std::vector<std::vector<std::string>> & data)
 
 void TableFrame::reload()
 {
-    if(_data.size() < 10)
-    {
-        _pageInfo->SetLabel("1-" + std::to_string(_data.size()));
-    }
-    else
-    {
-        _pageInfo->SetLabel("1-10");
-    }
-    
-    for(int i = 0; i < 10; i++)
-    {
-        if( i >= _data.size())
-            break;
-        _rows[i]->Clear();
-        int px = 0;
-        auto it = _data[i].begin();
-        for(auto &p : _labelData)
-        {
-            px += p.second;
-            _rows[i]->WriteText(*it++);
-            int x, y;
-            if(it == _data[i].end())
-                break;
-            do{
-                _rows[i]->WriteText(" ");
-                _rows[i]->GetTextExtent(_rows[i]->GetLineText(0), &x, &y);
-                
-            }while(x < px-10);      
-            
-        }
-        
-    }
+    setPage(0);
 }
 
 
@@ -120,16 +103,6 @@ void TableFrame::setOnSpec(const std::function<void(const std::vector<std::strin
     _onSpecial = f;
 }
 
-void TableFrame::setOnGetRaport(const std::function<void()> & f)
-{
-    _onGetRaport = f;
-}
-
-void TableFrame::setOnGetEmail(const std::function<void()> & f)
-{
-    _onGetEmail = f;
-}
-
 void TableFrame::onAdd(wxCommandEvent& WXUNUSED(event))
 {
     if(_onAdd)
@@ -144,4 +117,83 @@ void TableFrame::onSpecial(int n)
     {
         _onSpecial(_data[_page*10 + n]);
     }
+}
+
+void TableFrame::onDelete(int n)
+{
+    if(_onDelete && _data.size() > _page*10 + n)
+    {
+        _onDelete(_data[_page*10 + n]);
+    }
+}
+
+void TableFrame::onModify(int n)
+{
+    if(_onModify && _data.size() > _page*10 + n)
+    {
+        _onModify(_data[_page*10 + n]);
+    }
+}
+
+
+void TableFrame::onPrevious(wxCommandEvent& WXUNUSED(event))
+{
+    setPage(_page - 1);
+}
+void TableFrame::onNext(wxCommandEvent& WXUNUSED(event))
+{
+    setPage(_page + 1);
+}
+
+void TableFrame::setPage(int p)
+{
+    if(p < 0)
+        return;
+
+    if(p > (_data.size()-1)/10)
+        return;
+
+    _page = p;
+    if(_data.size() == 0)
+    {
+        _pageInfo->SetLabel("0-0 /0");
+    }
+    else
+    {
+        int s = _page * 10 + 1;
+        int e = (_page + 1)*10;
+        if(e > _data.size())
+            e = _data.size();
+        _pageInfo->SetLabel(std::to_string(s)+"-"+std::to_string(e)+" /" + std::to_string(_data.size()));
+    }
+    for(int i = 0; i < 10; i++)
+    {
+        _rows[i]->Clear();
+        if( i + _page * 10 >= _data.size())
+            continue;
+        
+        int px = 0;
+        auto it = _data[i + _page * 10].begin();
+        for(auto &p : _labelData)
+        {
+            px += p.second;
+            _rows[i]->WriteText(*it++);
+            int x, y;
+            if(it == _data[i + _page * 10].end())
+                break;
+            do{
+                _rows[i]->WriteText(" ");
+                _rows[i]->GetTextExtent(_rows[i]->GetLineText(0), &x, &y);
+                
+            }while(x < px-10);      
+            
+        }
+        
+    }
+}
+
+
+void TableFrame::onRaport(wxCommandEvent & event)
+{
+
 }

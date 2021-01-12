@@ -9,7 +9,7 @@ void DBService::close()
 {
 }
 
-std::vector<std::vector<std::string>> DBService::getData(const std::string & s)
+std::vector<std::vector<std::string>> DBService::getTableData(const std::string & s)
 {
     if(s == "hufce")
     {

@@ -9,7 +9,7 @@ class DBService
 public:
     void init();
     void close();
-    std::vector<std::vector<std::string>> getData(const std::string & s);
+    std::vector<std::vector<std::string>> getTableData(const std::string & s);
 private:
 
 };

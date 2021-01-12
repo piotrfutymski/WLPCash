@@ -22,8 +22,6 @@ public:
     void setOnModify(const std::function<void(const std::vector<std::string> &)> & f);
     void setOnDel(const std::function<void(const std::vector<std::string> &)> & f);
     void setOnSpec(const std::function<void(const std::vector<std::string> &)> & f);
-    void setOnGetRaport(const std::function<void()> & f);
-    void setOnGetEmail(const std::function<void()> & f);
 
 
 private:
@@ -65,8 +63,6 @@ private:
     std::function<void(const std::vector<std::string> &)> _onModify;
     std::function<void(const std::vector<std::string> &)> _onDelete;
     std::function<void(const std::vector<std::string> &)> _onSpecial;
-    std::function<void()> _onGetRaport;
-    std::function<void()> _onGetEmail;
 
 private:
 
@@ -81,7 +77,11 @@ private:
     void onModify(int n);
     void onDelete(int n);
     void onSpecial(int n);
-    void onGetReport(wxCommandEvent & event);
-    void onGetEmail(wxCommandEvent & event);
+
+    void onPrevious(wxCommandEvent & event);
+    void onNext(wxCommandEvent & event);
+    void onRaport(wxCommandEvent & event);
+
+    void setPage(int p);
 
 };
