@@ -23,6 +23,9 @@ public:
     void setOnDel(const std::function<void(const std::vector<std::string> &)> & f);
     void setOnSpec(const std::function<void(const std::vector<std::string> &)> & f);
 
+    void setValue(const std::string & v);
+    std::string getValue();
+
 
 private:
 
@@ -52,6 +55,8 @@ private:
     std::vector<std::vector<std::string>> _data;
     std::vector<std::pair<std::string, int>> _labelData;
     int _page = 0;
+
+    std::string _value;
 
     // style
 

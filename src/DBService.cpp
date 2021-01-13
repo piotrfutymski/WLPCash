@@ -66,11 +66,18 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
 
 }
 
+std::vector<std::vector<std::string>> DBService::getStanyInstruktora(const std::string & instruktor)
+{
+    return{
+        {"czynny","13-04-2017", "19-09-2019"},
+        {"urlop", "19-09-2019", ""}
+    };
+}
+
 std::vector<std::string> DBService::getPossibleHufcowi()
 {
     return {"Jan Kowalski", "Antoni Kozanecki"};
 }
-
 
 std::vector<std::string> DBService::getPossibleDruzynowi()
 {
@@ -92,6 +99,11 @@ std::vector<std::string> DBService::getPossibleStopnieInstr()
 std::vector<std::string> DBService::getPossibleStopnieHarc()
 {
     return {"HO", "HR"};
+}
+
+std::vector<std::string> DBService::getPossibleStatusy()
+{
+    return {"czynny", "urlop", "rezerwa", "skreslony"};
 }
 
 //CHANGING DATA
@@ -133,6 +145,17 @@ bool DBService::insertInstruktor(const std::vector<std::string> & instruktor)
     return false;
 }
 bool DBService::deleteInstruktor(const std::string & imie, const std::string & nazwisko)
+{
+    return false;
+}
+
+
+bool DBService::insertStatus(const std::vector<std::string> & status)
+{
+    return false;
+}
+
+bool DBService::deleteStatus(const std::string & dataPocz, const std::string & instruktor)
 {
     return false;
 }

@@ -13,6 +13,7 @@ public:
     //SELECT FUNCTIONS (getting data from database)
 
     std::vector<std::vector<std::string>> getTableData(const std::string & s);
+    std::vector<std::vector<std::string>> getStanyInstruktora(const std::string & instruktor);
 
     std::vector<std::string> getPossibleHufcowi();
     std::vector<std::string> getPossibleDruzynowi();
@@ -20,6 +21,7 @@ public:
     std::vector<std::string> getPossibleTypyDruzyn();
     std::vector<std::string> getPossibleStopnieInstr();
     std::vector<std::string> getPossibleStopnieHarc();
+    std::vector<std::string> getPossibleStatusy();
 
     //UPDATE FUNCTIONS (changing data in database)
 
@@ -34,6 +36,10 @@ public:
     bool updateInstruktor(const std::string & imie, const std::string & nazwisko, const std::vector<std::string> & instruktor);
     bool insertInstruktor(const std::vector<std::string> & instruktor);
     bool deleteInstruktor(const std::string & imie, const std::string & nazwisko);
+
+
+    bool insertStatus(const std::vector<std::string> & status);
+    bool deleteStatus(const std::string & dataPocz, const std::string & instruktor);
 
 private:
 

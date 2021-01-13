@@ -1,7 +1,7 @@
 #include "StatusForm.h"
 
-StatusForm::StatusForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz statusu instruktora"), wxDefaultPosition, wxSize(580, 220+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+StatusForm::StatusForm(int ID, DBService * service)
+    : PopUpFrame(NULL, ID, wxT("Formularz statusu instruktora"), wxDefaultPosition, wxSize(580, 220+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _db{service}
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 
@@ -16,11 +16,60 @@ StatusForm::StatusForm(int ID)
     _okButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::OK), wxT("OK") ,wxPoint(500, 180), wxSize(50,30));
 
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(StatusForm::close));
+    Connect(wxWindowID(ID::OK), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(StatusForm::onOK));
 }
 
 void StatusForm::reload()
 {
-    //TO DO
-    _statusInput->Append(std::vector<wxString>{wxT("Czynny"), wxT("Rezerwa"), wxT("Skreślony")});
+    _statusInput->Clear();
+    for(auto & std: _statusData)
+        _statusInput->Append(std);
 
+}
+
+void StatusForm::fillStatusData(const std::vector<std::string> & hD)
+{
+    _statusData = hD;
+}
+
+void StatusForm::setInstruktor(const std::string & s)
+{
+    _instruktor = s;
+}
+
+void StatusForm::setOnOK(const std::function<void()> & f)
+{
+    _okFun = f;
+}
+
+void StatusForm::onOK(wxCommandEvent & event)
+{
+    std::unique_ptr<wxMessageDialog> dial;
+    bool res = false;
+
+    std::vector<std::string> data;
+    data.push_back(std::string(_dataDInput->GetValue()));
+    data.push_back(std::string(_dataMInput->GetValue()));
+    data.push_back(std::string(_dataRInput->GetValue()));
+
+    if(_statusInput->GetSelection() != wxNOT_FOUND )
+        data.push_back(std::string(_statusInput->GetString(_statusInput->GetSelection())));
+    
+    data.push_back(_instruktor);
+
+    res = _db->insertStatus(data);
+
+    if(res)
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+    }
+    else
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+    }
+
+    dial->ShowModal(); 
+
+    if(_okFun)
+        _okFun();
 }

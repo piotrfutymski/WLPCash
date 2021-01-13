@@ -190,9 +190,10 @@ MainFrame::MainFrame()
     });
 
     _instruktorzyFrame->setOnSpec([&](const std::vector<std::string> & instr){
-        if(!_stanyInstruktoraFrame->isOpened())
-            _stanyInstruktoraFrame->Show();
+        _stanyInstruktoraFrame->Show();
+        _stanyInstruktoraFrame->fillData(_db.getStanyInstruktora(instr[1] + " " +instr[2]));
         _stanyInstruktoraFrame->reload();
+        _stanyInstruktoraFrame->setValue(instr[1] + " " +instr[2]);
         _stanyInstruktoraFrame->SetTitle("Stany instruktora: " + instr[1] + " " +instr[2]);
     });
 
@@ -206,13 +207,40 @@ MainFrame::MainFrame()
 
     _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
     std::vector<std::pair<std::string,int>>({{"Nazwa",100},{"Data rozp.",100},{"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
+
+    _stanyInstruktoraFrame->setOnDel([&](const std::vector<std::string> & stan){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteDruzyna(stan[1], _stanyInstruktoraFrame->getValue());
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();
+        _stanyInstruktoraFrame->fillData(_db.getStanyInstruktora( _stanyInstruktoraFrame->getValue()));
+        _stanyInstruktoraFrame->reload();
+        
+    });
+
     _stanyInstruktoraFrame->setOnAdd([&](){
         if(!_statusInstruktoraForm->isOpened())
             _statusInstruktoraForm->Show();
+
+        _statusInstruktoraForm->fillStatusData(_db.getPossibleStatusy());
+        _statusInstruktoraForm->setInstruktor(_stanyInstruktoraFrame->getValue());
         _statusInstruktoraForm->reload();
     });
 
-    _statusInstruktoraForm = std::make_unique<StatusForm>(wxWindowID(ID::INSTRUKTORZY)+4000);
+    _statusInstruktoraForm = std::make_unique<StatusForm>(wxWindowID(ID::INSTRUKTORZY)+4000, &_db);
+    _statusInstruktoraForm->setOnOK([&](){
+        _stanyInstruktoraFrame->fillData(_db.getStanyInstruktora( _stanyInstruktoraFrame->getValue()));
+        _stanyInstruktoraFrame->reload();
+    });
+
+    //---
 
     _okresyFrame = std::make_unique<TableFrame>(std::string("Okresy skladkowe"), 400, wxWindowID(ID::OKRESY)+1000,
     std::vector<std::pair<std::string,int>>({{"Poczatek okresu",150},{"Koniec okresu",150},{"Kwota",100}}), TableFrame::TableStyle::OnlyLast);

@@ -103,6 +103,17 @@ void TableFrame::setOnSpec(const std::function<void(const std::vector<std::strin
     _onSpecial = f;
 }
 
+void TableFrame::setValue(const std::string & v)
+{
+    _value = v;
+}
+
+std::string TableFrame::getValue()
+{
+    return _value;
+}
+
+
 void TableFrame::onAdd(wxCommandEvent& WXUNUSED(event))
 {
     if(_onAdd)
@@ -119,11 +130,14 @@ void TableFrame::onSpecial(int n)
 void TableFrame::onDelete(int n)
 {
     if(_style == TableStyle::OnlyLast)
+    {
         if(_onDelete && _data.size() - 1 == _page*10 + n)
         {
-            _onDelete(_data[_page*10 + n]);
-            return;
+            _onDelete(_data[_page*10 + n]);          
         }
+        return;
+    }
+       
 
     if(_onDelete && _data.size() > _page*10 + n)
         _onDelete(_data[_page*10 + n]);
