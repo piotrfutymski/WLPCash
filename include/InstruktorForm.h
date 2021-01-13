@@ -1,12 +1,28 @@
 #pragma once
 #include "PopUpFrame.h"
+#include "DBService.h"
 
 class InstruktorForm : public PopUpFrame
 {
 public:
-    InstruktorForm(int ID);
+    InstruktorForm(int ID, DBService * db);
 
     virtual void reload();
+    
+    void fillStopienInstrData(const std::vector<std::string> & hD);
+    void fillstopienHarcData(const std::vector<std::string> & hD);
+    void fillHufiecData(const std::vector<std::string> & hD);
+
+    void setImie(const std::string & s);
+    void setNazwisko(const std::string & s);
+    void setEmail(const std::string & s);
+    void setRozkaz(const std::string & s);
+    void setStopienInstr(const std::string & s);
+    void setStopienHarc(const std::string & s);
+    void setHufiec(const std::string & s);
+
+    void setModify(bool m);
+    void setOnOK(const std::function<void()> & f);
 
 private:
 
@@ -36,6 +52,31 @@ private:
 
     std::unique_ptr<wxButton> _okButton;
 
+    //DATA
+
+    std::string _imie;
+    std::string _nazwisko;
+    std::string _email;
+    std::string _rozkaz;
+    std::string _stopienInstr;
+    std::string _stopienHarc;
+    std::string _hufiec;
+
+    std::vector<std::string> _stopienInstrData;
+    std::vector<std::string> _stopienHarcData;
+    std::vector<std::string> _hufiecData;
+    
+    //MODE
+
+    bool _modify;
+
+    //SERVICE
+
+    DBService * _db;
+
+    //Function
+
+    std::function<void()> _okFun;
 
 private:
 
@@ -43,6 +84,8 @@ private:
     {
         IMIE = 1, NAZWISKO, EMAIL, ROZKAZ, STOPIEN_INSTR, STOPIEN_HARC, HUFIEC, DATA_D, DATA_M, DATA_R, OK
     };
+
+    void onOK(wxCommandEvent & event);
 
 
 };

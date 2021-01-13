@@ -138,11 +138,57 @@ MainFrame::MainFrame()
 
     _instruktorzyFrame = std::make_unique<TableFrame>(std::string("Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
     std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"E-mail",200},{"Rozkaz",100},{"St. instr.",100},{"St. harcerski",100},{"Hufiec",100}}), TableFrame::TableStyle::Special);
+    
+    _instruktorzyFrame->setOnModify([&](const std::vector<std::string> & instruktor){
+        if(!_instruktorForm->isOpened())
+            _instruktorForm->Show();
+        _instruktorForm->fillStopienInstrData(_db.getPossibleStopnieInstr());
+        _instruktorForm->fillstopienHarcData(_db.getPossibleStopnieHarc());
+        _instruktorForm->fillHufiecData(_db.getPossibleHufce());
+  
+        _instruktorForm->setImie(instruktor[1]);
+        _instruktorForm->setNazwisko(instruktor[2]);
+        _instruktorForm->setEmail(instruktor[3]);
+        _instruktorForm->setRozkaz(instruktor[4]);
+        _instruktorForm->setStopienInstr(instruktor[5]);
+        _instruktorForm->setStopienHarc(instruktor[6]);
+        _instruktorForm->setHufiec(instruktor[7]);
+
+        _instruktorForm->setModify(true);
+        _instruktorForm->reload();
+    });
+
+    _instruktorzyFrame->setOnDel([&](const std::vector<std::string> & instruktor){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteDruzyna(instruktor[1], instruktor[2]);
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();
+        openTable("instruktorzy", _instruktorzyFrame);
+    });
+
     _instruktorzyFrame->setOnAdd([&](){
         if(!_instruktorForm->isOpened())
             _instruktorForm->Show();
+        _instruktorForm->fillStopienInstrData(_db.getPossibleStopnieInstr());
+        _instruktorForm->fillstopienHarcData(_db.getPossibleStopnieHarc());
+        _instruktorForm->fillHufiecData(_db.getPossibleHufce());
+
+        _instruktorForm->setImie("");
+        _instruktorForm->setNazwisko("");
+        _instruktorForm->setEmail("");
+        _instruktorForm->setRozkaz("");
+
+        _instruktorForm->setModify(false);
         _instruktorForm->reload();
     });
+
     _instruktorzyFrame->setOnSpec([&](const std::vector<std::string> & instr){
         if(!_stanyInstruktoraFrame->isOpened())
             _stanyInstruktoraFrame->Show();
@@ -150,7 +196,12 @@ MainFrame::MainFrame()
         _stanyInstruktoraFrame->SetTitle("Stany instruktora: " + instr[1] + " " +instr[2]);
     });
 
-    _instruktorForm = std::make_unique<InstruktorForm>(wxWindowID(ID::INSTRUKTORZY)+2000);
+    _instruktorForm = std::make_unique<InstruktorForm>(wxWindowID(ID::INSTRUKTORZY)+2000, &_db);
+    _instruktorForm->setOnOK([&](){
+        openTable("instruktorzy", _instruktorzyFrame);
+    });
+
+    //---
 
 
     _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,

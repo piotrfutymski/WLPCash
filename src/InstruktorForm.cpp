@@ -1,7 +1,7 @@
 #include "InstruktorForm.h"
 
-InstruktorForm::InstruktorForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz instruktora"), wxDefaultPosition, wxSize(580, 630+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+InstruktorForm::InstruktorForm(int ID, DBService * db)
+    : PopUpFrame(NULL, ID, wxT("Formularz instruktora"), wxDefaultPosition, wxSize(580, 630+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _db{db}
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 
@@ -28,12 +28,130 @@ InstruktorForm::InstruktorForm(int ID)
     _okButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::OK), wxT("OK") ,wxPoint(500, 590), wxSize(50,30));
 
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(InstruktorForm::close));
+    Connect(wxWindowID(ID::OK), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(InstruktorForm::onOK));
+
 }
 
 void InstruktorForm::reload()
 {
-    //TO DO
-    _stopienInstrInput->Append(std::vector<wxString>{wxT("pwd"), wxT("phm"), wxT("hm")});
-    _stopienHarcInput->Append(std::vector<wxString>{wxT("HO"), wxT("HR")});
+    _stopienHarcInput->Clear();
+    for(auto & std: _stopienHarcData)
+        _stopienHarcInput->Append(std);
 
+    _stopienInstrInput->Clear();
+    for(auto & std: _stopienInstrData)
+        _stopienInstrInput->Append(std);
+    
+    _hufiecInput->Clear();
+    for(auto & std: _hufiecData)
+        _hufiecInput->Append(std);
+
+
+
+    _imieInput->SetValue(_imie);
+    _nazwiskoInput->SetValue(_nazwisko);
+    _emailInput->SetValue(_email);
+    _rozkazInput->SetValue(_rozkaz);
+    _stopienInstrInput->SetSelection(_stopienInstrInput->FindString(_stopienInstr));
+    _stopienHarcInput->SetSelection(_stopienHarcInput->FindString(_stopienHarc));
+    _hufiecInput->SetSelection(_hufiecInput->FindString(_hufiec));
+}
+
+void InstruktorForm::fillStopienInstrData(const std::vector<std::string> & hD)
+{
+    _stopienInstrData = hD;
+}
+void InstruktorForm::fillstopienHarcData(const std::vector<std::string> & hD)
+{
+    _stopienHarcData = hD;
+}
+void InstruktorForm::fillHufiecData(const std::vector<std::string> & hD)
+{
+    _hufiecData= hD;
+}
+
+void InstruktorForm::setImie(const std::string & s)
+{
+    _imie = s;
+}
+void InstruktorForm::setNazwisko(const std::string & s)
+{
+    _nazwisko = s;
+}
+void InstruktorForm::setEmail(const std::string & s)
+{
+    _email = s;
+}
+void InstruktorForm::setRozkaz(const std::string & s)
+{
+    _rozkaz = s;
+}
+void InstruktorForm::setStopienInstr(const std::string & s)
+{
+    _stopienInstr = s;
+}
+void InstruktorForm::setStopienHarc(const std::string & s)
+{
+    _stopienHarc = s;
+}
+void InstruktorForm::setHufiec(const std::string & s)
+{
+    _hufiec = s;
+}
+
+void InstruktorForm::setModify(bool m)
+{
+    _modify = m;
+}
+void InstruktorForm::setOnOK(const std::function<void()> & f)
+{
+    _okFun = f;
+}
+
+void InstruktorForm::onOK(wxCommandEvent & event)
+{
+    std::unique_ptr<wxMessageDialog> dial;
+    bool res = false;
+
+    std::vector<std::string> data;
+    data.push_back(std::string(_imieInput->GetValue()));
+    data.push_back(std::string(_nazwiskoInput->GetValue()));
+    data.push_back(std::string(_emailInput->GetValue()));
+    data.push_back(std::string(_rozkazInput->GetValue()));
+
+    if(_stopienInstrInput->GetSelection() != wxNOT_FOUND )
+        data.push_back(std::string(_stopienInstrInput->GetString(_stopienInstrInput->GetSelection())));
+    
+    if(_stopienHarcInput->GetSelection() != wxNOT_FOUND )
+        data.push_back(std::string(_stopienHarcInput->GetString(_stopienHarcInput->GetSelection())));
+    
+    if(_hufiecInput->GetSelection() != wxNOT_FOUND )
+        data.push_back(std::string(_hufiecInput->GetString(_hufiecInput->GetSelection())));
+
+    if(_modify)
+    {
+        res = _db->updateInstruktor(_imie, _nazwisko, data);
+    }
+    else
+    {
+        data.push_back(std::string(_dataDInput->GetValue()));
+        data.push_back(std::string(_dataMInput->GetValue()));
+        data.push_back(std::string(_dataRInput->GetValue()));
+        res = _db->insertInstruktor(data);
+    }
+
+    if(res)
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+    }
+    else
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+    }
+
+    dial->ShowModal();
+    
+
+    if(_okFun)
+        _okFun();
 }

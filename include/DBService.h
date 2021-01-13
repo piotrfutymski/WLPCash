@@ -18,6 +18,8 @@ public:
     std::vector<std::string> getPossibleDruzynowi();
     std::vector<std::string> getPossibleHufce();
     std::vector<std::string> getPossibleTypyDruzyn();
+    std::vector<std::string> getPossibleStopnieInstr();
+    std::vector<std::string> getPossibleStopnieHarc();
 
     //UPDATE FUNCTIONS (changing data in database)
 
@@ -28,6 +30,10 @@ public:
     bool updateDruzyna(const std::string & nazwa, const std::string & numer, const std::vector<std::string> & druzyna);
     bool insertDruzyna(const std::vector<std::string> & druzyna);
     bool deleteDruzyna(const std::string & nazwa, const std::string & numer);
+
+    bool updateInstruktor(const std::string & imie, const std::string & nazwisko, const std::vector<std::string> & instruktor);
+    bool insertInstruktor(const std::vector<std::string> & instruktor);
+    bool deleteInstruktor(const std::string & imie, const std::string & nazwisko);
 
 private:
 

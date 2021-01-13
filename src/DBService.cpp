@@ -85,6 +85,15 @@ std::vector<std::string> DBService::getPossibleTypyDruzyn()
     return {"Harcerska", "Zuchowa", "Wedrownicza"};
 }
 
+std::vector<std::string> DBService::getPossibleStopnieInstr()
+{
+    return {"pwd", "phm", "hm"};
+}
+std::vector<std::string> DBService::getPossibleStopnieHarc()
+{
+    return {"HO", "HR"};
+}
+
 //CHANGING DATA
 
 bool DBService::updateHufiec(const std::string & nazwa, const std::vector<std::string> & hufiec)
@@ -111,6 +120,19 @@ bool DBService::insertDruzyna(const std::vector<std::string> & druzyna)
     return false;
 }
 bool DBService::deleteDruzyna(const std::string & nazwa, const std::string & numer)
+{
+    return false;
+}
+
+bool DBService::updateInstruktor(const std::string & imie, const std::string & nazwisko, const std::vector<std::string> & instruktor)
+{
+    return false;
+}
+bool DBService::insertInstruktor(const std::vector<std::string> & instruktor)
+{
+    return false;
+}
+bool DBService::deleteInstruktor(const std::string & imie, const std::string & nazwisko)
 {
     return false;
 }
