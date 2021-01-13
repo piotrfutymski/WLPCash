@@ -65,3 +65,28 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
     return {{}};
 
 }
+
+std::vector<std::string> DBService::getPossibleHufcowi()
+{
+    return {"Jan Kowalski", "Antoni Kozanecki"};
+}
+
+
+
+
+//CHANGING DATA
+
+bool DBService::updateHufiec(const std::string & nazwa, const std::vector<std::string> & hufiec)
+{
+    return false;
+}
+
+bool DBService::insertHufiec(const std::vector<std::string> & hufiec)
+{
+    return false;
+}
+
+bool DBService::deleteHufiec(const std::string & nazwa)
+{
+    return false;
+}

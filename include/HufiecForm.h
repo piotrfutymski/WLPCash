@@ -1,12 +1,23 @@
 #pragma once
+#include <functional>
 #include "PopUpFrame.h"
+#include "DBService.h"
 
 class HufiecForm : public PopUpFrame
 {
 public:
-    HufiecForm(int ID);
+    HufiecForm(int ID, DBService * service);
 
     virtual void reload();
+
+    void fillHufocowyData(const std::vector<std::string> & hD);
+
+    void setNazwa(const std::string & s);
+    void setHufcowy(const std::string & s);
+    void setModify(bool m);
+
+    void setOnOK(const std::function<void()> & f);
+
 
 private:
 
@@ -22,8 +33,23 @@ private:
 
     std::unique_ptr<wxButton> _okButton;
 
+    //DATA
+
     std::string _nazwa;
+    std::string _hufcowy;
     std::vector<std::string> _hufcowyData;
+
+    //MODE
+
+    bool _modify;
+
+    //SERVICE
+
+    DBService * _db;
+
+    //Function
+
+    std::function<void()> _okFun;
 
 private:
 
@@ -31,6 +57,8 @@ private:
     {
         NAZWA = 1, HUFCOWY, OK
     };
+
+    void onOK(wxCommandEvent & event);
 
 
 };

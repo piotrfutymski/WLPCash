@@ -35,14 +35,52 @@ MainFrame::MainFrame()
 
     //FRAMES
 
+    //---
+
     _hufceFrame = std::make_unique<TableFrame>(std::string("Hufce"), 300, wxWindowID(ID::HUFCE)+1000, std::vector<std::pair<std::string,int>>({{"Nazwa",120},{"Hufcowy",180}}));
-    _hufceFrame->setOnAdd([&](){
+    _hufceFrame->setOnModify([&](const std::vector<std::string> & hufiec){
         if(!_hufiecForm->isOpened())
             _hufiecForm->Show();
+        _hufiecForm->fillHufocowyData(_db.getPossibleHufcowi());
+        _hufiecForm->setNazwa(hufiec[0]);
+        _hufiecForm->setHufcowy(hufiec[1]);
+        _hufiecForm->setModify(true);
         _hufiecForm->reload();
     });
 
-    _hufiecForm = std::make_unique<HufiecForm>(wxWindowID(ID::HUFCE)+2000);
+    _hufceFrame->setOnDel([&](const std::vector<std::string> & hufiec){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteHufiec(hufiec[0]);
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();
+        openTable("hufce", _hufceFrame);
+    });
+
+
+    _hufceFrame->setOnAdd([&](){
+       if(!_hufiecForm->isOpened())
+            _hufiecForm->Show();
+        _hufiecForm->fillHufocowyData(_db.getPossibleHufcowi());
+        _hufiecForm->setNazwa("");
+        _hufiecForm->setModify(false);
+        _hufiecForm->reload();
+    });
+
+    _hufiecForm = std::make_unique<HufiecForm>(wxWindowID(ID::HUFCE)+2000, &_db);
+    _hufiecForm->setOnOK([&](){
+        openTable("hufce", _hufceFrame);
+    });
+
+    //---
+
+
 
     _druzynyFrame = std::make_unique<TableFrame>(std::string("Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
     std::vector<std::pair<std::string, int>>({{"Nazwa", 100},{"Numer",70},{"Czy probna",80},{"Patron",200},{"Druzynowy",180},{"Hufiec",100},{"Typ",100}}));
