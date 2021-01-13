@@ -1,7 +1,7 @@
 #include "OkresForm.h"
 
-OkresForm::OkresForm(int ID)
-    : PopUpFrame(NULL, ID, wxT("Formularz okresu składkowego"), wxDefaultPosition, wxSize(580, 180+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+OkresForm::OkresForm(int ID, DBService * service)
+    : PopUpFrame(NULL, ID, wxT("Formularz okresu składkowego"), wxDefaultPosition, wxSize(580, 180+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _db{service}
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 
@@ -15,10 +15,41 @@ OkresForm::OkresForm(int ID)
     _okButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::OK), wxT("OK") ,wxPoint(500, 150), wxSize(50,30));
 
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(OkresForm::close));
+    Connect(wxWindowID(ID::OK), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(OkresForm::onOK));
 }
 
 void OkresForm::reload()
 {
-    //TO DO
+}
 
+void OkresForm::setOnOK(const std::function<void()> & f)
+{
+    _okFun = f;
+}
+
+void OkresForm::onOK(wxCommandEvent & event)
+{
+     std::unique_ptr<wxMessageDialog> dial;
+    bool res = false;
+
+    std::vector<std::string> data;
+    data.push_back(std::string(_dataMInput->GetValue()));
+    data.push_back(std::string(_dataRInput->GetValue()));
+    data.push_back(std::string(_kwotaInput->GetValue()));
+
+    res = _db->insertOkres(data);
+
+    if(res)
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+    }
+    else
+    {
+        dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+    }
+
+    dial->ShowModal(); 
+
+    if(_okFun)
+        _okFun();
 }

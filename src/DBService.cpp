@@ -159,3 +159,13 @@ bool DBService::deleteStatus(const std::string & dataPocz, const std::string & i
 {
     return false;
 }
+
+bool DBService::insertOkres(const std::vector<std::string> & okres)
+{
+    return false;
+}
+
+bool DBService::deleteOkres(const std::string & dataPocz)
+{
+    return false;
+}

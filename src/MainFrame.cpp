@@ -160,7 +160,7 @@ MainFrame::MainFrame()
 
     _instruktorzyFrame->setOnDel([&](const std::vector<std::string> & instruktor){
         std::unique_ptr<wxMessageDialog> dial;
-        bool res = _db.deleteDruzyna(instruktor[1], instruktor[2]);
+        bool res = _db.deleteInstruktor(instruktor[1], instruktor[2]);
         if(res)
         {
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
@@ -204,13 +204,12 @@ MainFrame::MainFrame()
 
     //---
 
-
     _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
     std::vector<std::pair<std::string,int>>({{"Nazwa",100},{"Data rozp.",100},{"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
 
     _stanyInstruktoraFrame->setOnDel([&](const std::vector<std::string> & stan){
         std::unique_ptr<wxMessageDialog> dial;
-        bool res = _db.deleteDruzyna(stan[1], _stanyInstruktoraFrame->getValue());
+        bool res = _db.deleteStatus(stan[1], _stanyInstruktoraFrame->getValue());
         if(res)
         {
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
@@ -244,13 +243,35 @@ MainFrame::MainFrame()
 
     _okresyFrame = std::make_unique<TableFrame>(std::string("Okresy skladkowe"), 400, wxWindowID(ID::OKRESY)+1000,
     std::vector<std::pair<std::string,int>>({{"Poczatek okresu",150},{"Koniec okresu",150},{"Kwota",100}}), TableFrame::TableStyle::OnlyLast);
+    
+    _okresyFrame->setOnDel([&](const std::vector<std::string> &okres){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteOkres(okres[0]);
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();  
+        openTable("okresy", _okresyFrame);
+    });
+
     _okresyFrame->setOnAdd([&](){
         if(!_okresForm->isOpened())
             _okresForm->Show();
+
         _okresForm->reload();
     });
 
-    _okresForm = std::make_unique<OkresForm>(wxWindowID(ID::OKRESY)+2000);
+    _okresForm = std::make_unique<OkresForm>(wxWindowID(ID::OKRESY)+2000, &_db);
+    _okresForm->setOnOK([&](){
+        openTable("okresy", _okresyFrame);
+    });
+
+    //---
 
     _chooseWplatyFrame = std::make_unique<ChooseWplatyFrame>(wxWindowID(ID::WPLATY)+1000);
     _chooseWplatyFrame->setOnAll([&](){

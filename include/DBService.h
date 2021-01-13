@@ -37,9 +37,11 @@ public:
     bool insertInstruktor(const std::vector<std::string> & instruktor);
     bool deleteInstruktor(const std::string & imie, const std::string & nazwisko);
 
-
     bool insertStatus(const std::vector<std::string> & status);
     bool deleteStatus(const std::string & dataPocz, const std::string & instruktor);
+
+    bool insertOkres(const std::vector<std::string> & okres);
+    bool deleteOkres(const std::string & dataPocz);
 
 private:
 

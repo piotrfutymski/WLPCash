@@ -1,12 +1,15 @@
 #pragma once
 #include "PopUpFrame.h"
+#include "DBService.h"
 
 class OkresForm : public PopUpFrame
 {
 public:
-    OkresForm(int ID);
+    OkresForm(int ID, DBService * service);
 
     virtual void reload();
+
+    void setOnOK(const std::function<void()> & f);
 
 private:
 
@@ -23,6 +26,14 @@ private:
 
     std::unique_ptr<wxButton> _okButton;
 
+    //SERVICE
+
+    DBService * _db;
+
+    //Function
+
+    std::function<void()> _okFun;
+
 private:
 
     enum class ID
@@ -30,5 +41,6 @@ private:
         KWOTA = 1, DATA_D, DATA_M, DATA_R, OK
     };
 
+    void onOK(wxCommandEvent & event);
 
 };
