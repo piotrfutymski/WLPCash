@@ -1,12 +1,30 @@
 #pragma once
 #include "PopUpFrame.h"
+#include "DBService.h"
 
 class DruzynaForm : public PopUpFrame
 {
 public:
-    DruzynaForm(int ID);
+    DruzynaForm(int ID, DBService * db);
 
     virtual void reload();
+
+    void fillDruzynowyData(const std::vector<std::string> & hD);
+    void fillHufiecData(const std::vector<std::string> & hD);
+    void fillTypData(const std::vector<std::string> & hD);
+
+    void setNazwa(const std::string & s);
+    void setNumer(const std::string & s);
+    void setProbna(const std::string & s);
+    void setPatron(const std::string & s);
+    void setDruzynowy(const std::string & s);
+    void setHufiec(const std::string & s);
+    void setTyp(const std::string & s);
+
+
+    void setModify(bool m);
+    void setOnOK(const std::function<void()> & f);
+
 
 private:
 
@@ -32,6 +50,32 @@ private:
 
     std::unique_ptr<wxButton> _okButton;
 
+    //DATA
+
+    std::string _nazwa;
+    std::string _numer;
+    std::string _probna;
+    std::string _patron;
+    std::string _druzynowy;
+    std::string _hufiec;
+    std::string _typ;
+
+    std::vector<std::string> _druzynowyData;
+    std::vector<std::string> _hufiecData;
+    std::vector<std::string> _typData;
+
+    //MODE
+
+    bool _modify;
+
+    //SERVICE
+
+    DBService * _db;
+
+    //Function
+
+    std::function<void()> _okFun;
+
 
 private:
 
@@ -40,5 +84,6 @@ private:
         NAZWA = 1, NUMER, PROBNA, PATRON, DRUZYNOWY, HUFIEC, TYP, OK
     };
 
+    void onOK(wxCommandEvent & event);
 
 };

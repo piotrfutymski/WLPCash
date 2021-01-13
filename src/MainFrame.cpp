@@ -80,17 +80,61 @@ MainFrame::MainFrame()
 
     //---
 
-
-
     _druzynyFrame = std::make_unique<TableFrame>(std::string("Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
     std::vector<std::pair<std::string, int>>({{"Nazwa", 100},{"Numer",70},{"Czy probna",80},{"Patron",200},{"Druzynowy",180},{"Hufiec",100},{"Typ",100}}));
-    _druzynyFrame->setOnAdd([&](){
+    _druzynyFrame->setOnModify([&](const std::vector<std::string> & druzyna){
         if(!_druzynaForm->isOpened())
             _druzynaForm->Show();
+        _druzynaForm->fillDruzynowyData(_db.getPossibleDruzynowi());
+        _druzynaForm->fillHufiecData(_db.getPossibleHufce());
+        _druzynaForm->fillTypData(_db.getPossibleTypyDruzyn());
+        _druzynaForm->setNazwa(druzyna[0]);
+        _druzynaForm->setNumer(druzyna[1]);
+        _druzynaForm->setProbna(druzyna[2]);
+        _druzynaForm->setPatron(druzyna[3]);
+        _druzynaForm->setDruzynowy(druzyna[4]);
+        _druzynaForm->setHufiec(druzyna[5]);
+        _druzynaForm->setTyp(druzyna[6]);
+
+        _druzynaForm->setModify(true);
         _druzynaForm->reload();
     });
 
-    _druzynaForm = std::make_unique<DruzynaForm>(wxWindowID(ID::DRUZYNY)+2000);
+    _druzynyFrame->setOnDel([&](const std::vector<std::string> & druzyna){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteDruzyna(druzyna[0], druzyna[1]);
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();
+        openTable("druzyny", _druzynyFrame);
+    });
+
+    _druzynyFrame->setOnAdd([&](){
+       if(!_druzynaForm->isOpened())
+            _druzynaForm->Show();
+        _druzynaForm->fillDruzynowyData(_db.getPossibleDruzynowi());
+        _druzynaForm->fillHufiecData(_db.getPossibleHufce());
+        _druzynaForm->fillTypData(_db.getPossibleTypyDruzyn());
+        _druzynaForm->setNazwa("");
+        _druzynaForm->setNumer("");
+        _druzynaForm->setPatron("");
+
+        _hufiecForm->setModify(false);
+        _hufiecForm->reload();
+    });
+
+    _druzynaForm = std::make_unique<DruzynaForm>(wxWindowID(ID::DRUZYNY)+2000, &_db);
+    _druzynaForm->setOnOK([&](){
+        openTable("druzyny", _druzynyFrame);
+    });
+
+    //---
 
     _instruktorzyFrame = std::make_unique<TableFrame>(std::string("Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
     std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"E-mail",200},{"Rozkaz",100},{"St. instr.",100},{"St. harcerski",100},{"Hufiec",100}}), TableFrame::TableStyle::Special);

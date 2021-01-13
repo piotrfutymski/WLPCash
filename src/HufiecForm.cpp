@@ -20,8 +20,6 @@ HufiecForm::HufiecForm(int ID, DBService * service)
 
 void HufiecForm::reload()
 {
-    //TO DO
-
     _hufcowyInput->Clear();
     for(auto & std: _hufcowyData)
         _hufcowyInput->Append(std);
@@ -63,11 +61,9 @@ void HufiecForm::onOK(wxCommandEvent& WXUNUSED(event))
 
     std::vector<std::string> data;
     data.push_back(std::string(_nazwaInput->GetValue()));
-    try{
+
+    if(_hufcowyInput->GetSelection() != wxNOT_FOUND )
         data.push_back(std::string(_hufcowyInput->GetString(_hufcowyInput->GetSelection())));
-    }
-    catch (std::exception e)
-    {}
 
     if(_modify)
     {

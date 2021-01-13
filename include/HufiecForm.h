@@ -14,8 +14,8 @@ public:
 
     void setNazwa(const std::string & s);
     void setHufcowy(const std::string & s);
-    void setModify(bool m);
 
+    void setModify(bool m);
     void setOnOK(const std::function<void()> & f);
 
 

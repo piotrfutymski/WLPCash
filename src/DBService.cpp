@@ -72,7 +72,18 @@ std::vector<std::string> DBService::getPossibleHufcowi()
 }
 
 
-
+std::vector<std::string> DBService::getPossibleDruzynowi()
+{
+    return {"Jan Kowalski", "Antoni Kozanecki"};
+}
+std::vector<std::string> DBService::getPossibleHufce()
+{
+    return {"Gniazdo", "Test"};
+}
+std::vector<std::string> DBService::getPossibleTypyDruzyn()
+{
+    return {"Harcerska", "Zuchowa", "Wedrownicza"};
+}
 
 //CHANGING DATA
 
@@ -87,6 +98,19 @@ bool DBService::insertHufiec(const std::vector<std::string> & hufiec)
 }
 
 bool DBService::deleteHufiec(const std::string & nazwa)
+{
+    return false;
+}
+
+bool DBService::updateDruzyna(const std::string & nazwa, const std::string & numer, const std::vector<std::string> & druzyna)
+{
+    return false;
+}
+bool DBService::insertDruzyna(const std::vector<std::string> & druzyna)
+{
+    return false;
+}
+bool DBService::deleteDruzyna(const std::string & nazwa, const std::string & numer)
 {
     return false;
 }
