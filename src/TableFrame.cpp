@@ -211,4 +211,22 @@ void TableFrame::setPage(int p)
 void TableFrame::onRaport(wxCommandEvent & event)
 {
 
+    std::ofstream file ( "raport.txt", std::ios::app );
+
+    for(auto & line: _data)
+    {
+        for(auto & world: line)
+        {
+            file<<world;
+            file<<";";
+        }
+        file<<"\n";
+    }
+
+    file.close();
+
+    std::unique_ptr<wxMessageDialog> dial;
+    dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Wykonano zapis do pliku raport.txt"), wxT("Info"), wxOK);
+    dial->ShowModal();
+
 }

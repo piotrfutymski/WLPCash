@@ -82,6 +82,24 @@ std::vector<std::vector<std::string>> DBService::getWplatyInstruktora(const std:
         return res;
 }
 
+
+std::vector<std::vector<std::string>> DBService::getWplatyIndData(const std::vector<std::string> & dat)
+{
+    return {{"Jan", "Kowalski", "aaa@aaa", "pwd", "Gniazdo", "100"}};
+}
+std::vector<std::vector<std::string>> DBService::getWplatyHufData(const std::vector<std::string> & dat)
+{
+    return{{"Gniazdo", "1000"}};
+}
+std::vector<std::vector<std::string>> DBService::getUzupelnieniaData()
+{
+    return {{"Jan", "Kowalski", "aaa@aaa", "pwd", "Gniazdo", "05-2020"}};
+}
+std::vector<std::vector<std::string>> DBService::getOpoznieniaData(const std::vector<std::string> & dat)
+{
+    return {{"Jan", "Kowalski", "aaa@aaa", "pwd", "Gniazdo", "05-2019"}};
+}
+
 std::vector<std::string> DBService::getPossibleHufcowi()
 {
     return {"Jan Kowalski", "Antoni Kozanecki"};
@@ -193,6 +211,15 @@ bool DBService::insertWplata(const std::vector<std::string> & wplata)
     return false;
 }
 bool DBService::deleteWplata(const std::string & id)
+{
+    return false;
+}
+
+bool DBService::resetBaza(const std::string & data)
+{
+    return false;
+}
+bool DBService::resetWplaty(const std::string & data)
 {
     return false;
 }

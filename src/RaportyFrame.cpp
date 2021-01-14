@@ -45,11 +45,10 @@ RaportyFrame::RaportyFrame(int ID)
 
 void RaportyFrame::reload()
 {
-    //TO DO
 
 }
 
-void RaportyFrame::setOnGenerate(const std::function<void()> & f, int n)
+void RaportyFrame::setOnGenerate(const std::function<void(const std::vector<std::string> &)> & f, int n)
 {
     _onGenerate[n] = f;
 }
@@ -57,5 +56,17 @@ void RaportyFrame::setOnGenerate(const std::function<void()> & f, int n)
 void RaportyFrame::onGenerate(int n)
 {
     if(_onGenerate[n])
-        _onGenerate[n]();
+    {
+        if(n == 0)
+            _onGenerate[n]({std::string(_dataDCtrl[0]->GetValue()), std::string(_dataMCtrl[0]->GetValue()),std::string(_dataRCtrl[0]->GetValue()),
+            std::string(_dataDCtrl[1]->GetValue()), std::string(_dataMCtrl[1]->GetValue()),std::string(_dataRCtrl[1]->GetValue())});
+        if(n == 1)
+            _onGenerate[n]({std::string(_dataDCtrl[2]->GetValue()), std::string(_dataMCtrl[2]->GetValue()),std::string(_dataRCtrl[2]->GetValue()),
+            std::string(_dataDCtrl[3]->GetValue()), std::string(_dataMCtrl[3]->GetValue()),std::string(_dataRCtrl[3]->GetValue())});
+        if(n == 2)
+            _onGenerate[n]({});
+        if(n == 3)
+            _onGenerate[n]({std::string(_dataDCtrl[4]->GetValue()), std::string(_dataMCtrl[4]->GetValue()),std::string(_dataRCtrl[4]->GetValue())});
+    }
+        
 }

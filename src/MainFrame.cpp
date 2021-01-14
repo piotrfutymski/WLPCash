@@ -30,6 +30,7 @@ MainFrame::MainFrame()
     Connect(wxWindowID(ID::WPLATY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onWplaty)); 
     Connect(wxWindowID(ID::RAPORTY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onRaporty)); 
     Connect(wxWindowID(ID::RESET_BAZY), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onResetBazy)); 
+    Connect(wxWindowID(ID::RESET_WPLAT), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrame::onResetWplat)); 
 
     Connect(9912, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(MainFrame::close));
 
@@ -365,15 +366,22 @@ MainFrame::MainFrame()
 
 
     _raportyFrame = std::make_unique<RaportyFrame>(wxWindowID(ID::RAPORTY)+1000);
-    _raportyFrame->setOnGenerate([&](){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+        _raportWplatIndFrame->fillData(_db.getWplatyIndData(dat));
         openPopUp(_raportWplatIndFrame.get());
     }, 0);
-    _raportyFrame->setOnGenerate([&](){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+        _raportWplatHufFrame->fillData(_db.getWplatyHufData(dat));
         openPopUp(_raportWplatHufFrame.get());
     }, 1);
-    _raportyFrame->setOnGenerate([&](){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+        _raportUzupelnienFrame->fillData(_db.getUzupelnieniaData());
         openPopUp(_raportUzupelnienFrame.get());
     }, 2);
+    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+        _raportUzupelnienFrame->fillData(_db.getOpoznieniaData(dat));
+        openPopUp(_raportUzupelnienFrame.get());
+    }, 3);
 
 
     _raportWplatIndFrame = std::make_unique<TableFrame>(std::string("Raport wpłat indywidualnych"), 650, wxWindowID(ID::RAPORTY)+2000,
@@ -385,10 +393,9 @@ MainFrame::MainFrame()
     _raportUzupelnienFrame = std::make_unique<TableFrame>(std::string("Raport opóźnień"), 700, wxWindowID(ID::RAPORTY)+4000,
     std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"E-Mail",150}, {"St. instr.",100}, {"Hufiec", 100}, {"Do kiedy oplacono", 150}}), TableFrame::TableStyle::Raport);
 
+    //---
     
-    _resetFrame = std::make_unique<ResetFrame>(wxWindowID(ID::RESET_BAZY)+1000);
-
-
+    _resetFrame = std::make_unique<ResetFrame>(wxWindowID(ID::RESET_BAZY)+1000, &_db);
 
 }
 
@@ -429,8 +436,15 @@ void MainFrame::onResetBazy(wxCommandEvent & event)
 {
     this->closeAll();
     openPopUp(_resetFrame.get());
+    _resetFrame->setOnlyWplaty(false);
 }
 
+void MainFrame::onResetWplat(wxCommandEvent & event)
+{
+    this->closeAll();
+    openPopUp(_resetFrame.get());
+    _resetFrame->setOnlyWplaty(true);
+}
 
 void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
 {

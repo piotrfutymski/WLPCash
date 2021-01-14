@@ -1,12 +1,15 @@
 #pragma once
 #include "PopUpFrame.h"
+#include "DBService.h"
 
 class ResetFrame : public PopUpFrame
 {
 public:
-    ResetFrame(int ID);
+    ResetFrame(int ID, DBService * service);
 
     virtual void reload();
+
+    void setOnlyWplaty(bool onW);
 
 private:
 
@@ -16,12 +19,16 @@ private:
 
     std::unique_ptr<wxStaticText> _label;
 
-    std::unique_ptr<wxTextCtrl> _dataDInput;
     std::unique_ptr<wxTextCtrl> _dataMInput;
     std::unique_ptr<wxTextCtrl> _dataRInput;
 
     std::unique_ptr<wxButton> _okButton;
 
+    //
+
+    bool _onlyWplaty = true;
+
+    DBService * _db;
 
 private:
 
@@ -32,5 +39,6 @@ private:
 
 private:
 
+    void onOK(wxCommandEvent & event);
 
 };

@@ -1,0 +1,3 @@
+PDH Jar;8;NIE;Stefan Grot Rowecki;Piotr Futymski;Gniazdo;Harcerska;
+PDH;17;NIE;Nie wiem;Jan Minksztym;Gniazdo;Harcerska;
+Gniazdo;1000;

@@ -8,7 +8,7 @@ public:
 
     virtual void reload();
 
-    void setOnGenerate(const std::function<void()> & f, int n);
+    void setOnGenerate(const std::function<void(const std::vector<std::string> &)> & f, int n);
 
 private:
 
@@ -25,7 +25,7 @@ private:
 
     //functions
 
-    std::function<void()> _onGenerate[4];
+    std::function<void(const std::vector<std::string> &)> _onGenerate[4];
 
 
 private:

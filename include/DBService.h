@@ -16,6 +16,11 @@ public:
     std::vector<std::vector<std::string>> getStanyInstruktora(const std::string & instruktor);
     std::vector<std::vector<std::string>> getWplatyInstruktora(const std::string & instruktor);
 
+    std::vector<std::vector<std::string>> getWplatyIndData(const std::vector<std::string> & dat);
+    std::vector<std::vector<std::string>> getWplatyHufData(const std::vector<std::string> & dat);
+    std::vector<std::vector<std::string>> getUzupelnieniaData();
+    std::vector<std::vector<std::string>> getOpoznieniaData(const std::vector<std::string> & dat);
+
     std::vector<std::string> getPossibleHufcowi();
     std::vector<std::string> getPossibleDruzynowi();
     std::vector<std::string> getAllInstruktorzy();
@@ -48,6 +53,11 @@ public:
     bool updateWplata(const std::string & id, const std::vector<std::string> & wplata);
     bool insertWplata(const std::vector<std::string> & wplata);
     bool deleteWplata(const std::string & id);
+
+    //
+
+    bool resetBaza(const std::string & data);
+    bool resetWplaty(const std::string & data);
 
 private:
 

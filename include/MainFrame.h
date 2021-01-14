@@ -79,6 +79,7 @@ private:
     void onWplaty(wxCommandEvent & event);
     void onRaporty(wxCommandEvent & event);
     void onResetBazy(wxCommandEvent & event);
+    void onResetWplat(wxCommandEvent & event);
 
     void openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame);
     void openPopUp(PopUpFrame * frame);
