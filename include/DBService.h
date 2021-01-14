@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <soci/soci.h>
+#include <iostream>
 
 
 
@@ -60,5 +62,5 @@ public:
     bool resetWplaty(const std::string & data);
 
 private:
-
+    soci::session *sql;
 };

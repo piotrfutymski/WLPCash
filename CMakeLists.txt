@@ -8,7 +8,9 @@ if(WIN32)
 endif()
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 
-include_directories("include")
+add_subdirectory(lib/SOCI)
+
+include_directories("include" "lib/SOCI/include" "build/lib/SOCI/include")
 
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "include/*.h" )
@@ -19,7 +21,7 @@ enable_testing()
 
 add_executable(WLPCash ${SOURCES} ${HEADERS})
 
-target_link_libraries(WLPCash ${wxWidgets_LIBRARIES})
+target_link_libraries(WLPCash ${wxWidgets_LIBRARIES} soci_core soci_odbc)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

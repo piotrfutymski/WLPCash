@@ -2,18 +2,25 @@
 
 void DBService::init()
 {
-
+    try {
+        sql = new soci::session("oracle", "service=//admlab2.cs.put.poznan.pl:1521/dblab02_students user=inf141216 password=inf141216");
+    }
+    catch(std::exception e){
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void DBService::close()
 {
+    sql->close();
+    delete sql;
 }
 
 std::vector<std::vector<std::string>> DBService::getTableData(const std::string & s)
 {
     if(s == "hufce")
     {
-         std::vector<std::vector<std::string>> res;
+        std::vector<std::vector<std::string>> res;
         res.push_back({"Gniazdo","Antoni Kozanecki"});
         res.push_back({"Test","Jan Kowalski"});
         res.push_back({"Test","Jan Kowalski"});
