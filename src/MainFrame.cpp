@@ -274,19 +274,94 @@ MainFrame::MainFrame()
     //---
 
     _chooseWplatyFrame = std::make_unique<ChooseWplatyFrame>(wxWindowID(ID::WPLATY)+1000);
+    _chooseWplatyFrame->setOnConcrete([&](){
+        closeAll();    
+        _wplatyFrame->Show();
+        _wplatyFrame->fillData(_db.getWplatyInstruktora(_chooseWplatyFrame->getInstruktor()));
+        _wplatyFrame->reload();
+        _wplatyFrame->setValue(_chooseWplatyFrame->getInstruktor());
+    });
     _chooseWplatyFrame->setOnAll([&](){
         openTable("wplaty", _wplatyFrame);
+        _wplatyFrame->setValue("-");
     });
 
-    _wplatyFrame = std::make_unique<TableFrame>(std::string("Wplaty"), 400, wxWindowID(ID::WPLATY)+2000,
-    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"Kwota",100}, {"Data",100}}));
-    _wplatyFrame->setOnAdd([&](){
+
+
+    _wplatyFrame = std::make_unique<TableFrame>(std::string("Wplaty"), 450, wxWindowID(ID::WPLATY)+2000,
+    std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"Kwota",100}, {"Data",100}}));
+    _wplatyFrame->setOnModify([&](const std::vector<std::string> & wplata){
         if(!_wplataForm->isOpened())
             _wplataForm->Show();
+        _wplataForm->fillInstruktorData(_db.getAllInstruktorzy());
+
+        _wplataForm->setID(wplata[0]);
+        _wplataForm->setInstruktor(wplata[1]+" "+wplata[2]);
+        _wplataForm->setKwota(wplata[3]);
+        _wplataForm->setDataD(std::string(1, wplata[4][0]) + std::string(1, wplata[4][1]));
+        _wplataForm->setDataM(std::string(1, wplata[4][3]) + std::string(1, wplata[4][4]));
+        _wplataForm->setDataR(std::string(1, wplata[4][6]) + std::string(1, wplata[4][7])+ std::string(1, wplata[4][8])+ std::string(1, wplata[4][9]));
+
+        _wplataForm->setModify(true);
         _wplataForm->reload();
     });
 
-    _wplataForm = std::make_unique<WplataForm>(wxWindowID(ID::WPLATY)+3000);
+    _wplatyFrame->setOnDel([&](const std::vector<std::string> & wplata){
+        std::unique_ptr<wxMessageDialog> dial;
+        bool res = _db.deleteWplata(wplata[0]);
+        if(res)
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Polecenie wykonane"), wxT("Info"), wxOK);
+        }
+        else
+        {
+            dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
+        }
+        dial->ShowModal();
+        if(_wplatyFrame->getValue() == "-")
+        {
+            openTable("wplaty", _wplatyFrame);
+        }
+        else
+        {
+            closeAll();    
+            _wplatyFrame->Show();
+            _wplatyFrame->fillData(_db.getWplatyInstruktora(_wplatyFrame->getValue()));
+            _wplatyFrame->reload();
+        }
+    });
+
+    _wplatyFrame->setOnAdd([&](){
+        if(!_wplataForm->isOpened())
+            _wplataForm->Show();
+         _wplataForm->fillInstruktorData(_db.getAllInstruktorzy());
+
+        _wplataForm->setID("");
+        _wplataForm->setKwota("");
+        _wplataForm->setDataD("");
+        _wplataForm->setDataM("");
+        _wplataForm->setDataR("");
+
+        _wplataForm->setModify(false);
+        _wplataForm->reload();
+    });
+
+    _wplataForm = std::make_unique<WplataForm>(wxWindowID(ID::WPLATY)+3000, &_db);
+    _wplataForm->setOnOK([&](){
+        if(_wplatyFrame->getValue() == "-")
+        {
+            openTable("wplaty", _wplatyFrame);
+        }
+        else
+        {
+            closeAll();    
+            _wplatyFrame->Show();
+            _wplatyFrame->fillData(_db.getWplatyInstruktora(_wplatyFrame->getValue()));
+            _wplatyFrame->reload();
+        }
+    });
+
+    //---
 
 
     _raportyFrame = std::make_unique<RaportyFrame>(wxWindowID(ID::RAPORTY)+1000);
@@ -340,6 +415,7 @@ void MainFrame::onOkresy(wxCommandEvent & event)
 void MainFrame::onWplaty(wxCommandEvent & event)
 {
     this->closeAll();
+    _chooseWplatyFrame->fillInstruktorData(_db.getAllInstruktorzy());
     openPopUp(_chooseWplatyFrame.get());
 }
 

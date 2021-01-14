@@ -9,7 +9,7 @@ ChooseWplatyFrame::ChooseWplatyFrame(int ID)
     _chooseAllButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::ALL), wxT("Wszystkie wpłaty"), wxPoint(160,50), wxSize(300,50));
 
     _instruktorInput = std::make_unique<wxListBox>(_panel.get(), wxWindowID(ID::INSTRUKTOR), wxPoint(40,120), wxSize(220,70));
-    _chooseConcreteButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::ALL), wxT("Wpłaty instruktora"), wxPoint(280,120), wxSize(300,50));
+    _chooseConcreteButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::CONCRETE), wxT("Wpłaty instruktora"), wxPoint(280,120), wxSize(300,50));
 
     Connect(ID, wxEVT_CLOSE_WINDOW, wxCommandEventHandler(ChooseWplatyFrame::close));
     Connect(wxWindowID(ID::ALL), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChooseWplatyFrame::onAll));
@@ -18,11 +18,17 @@ ChooseWplatyFrame::ChooseWplatyFrame(int ID)
 
 void ChooseWplatyFrame::reload()
 {
-    //TO DO
+    _instruktorInput->Clear();
+    for(auto & std: _instruktorData)
+        _instruktorInput->Append(std);
 
-    _instruktorInput->Append(std::vector<wxString>{wxT("Antoni Kozanecki"), wxT("Jan Kowalski")});
+    _instruktorInput->SetSelection(0);
 }
 
+void ChooseWplatyFrame::fillInstruktorData(const std::vector<std::string> & hD)
+{
+    _instruktorData = hD;
+}
 
 void ChooseWplatyFrame::setOnAll(const std::function<void()> & f)
 {
@@ -32,6 +38,11 @@ void ChooseWplatyFrame::setOnAll(const std::function<void()> & f)
 void ChooseWplatyFrame::setOnConcrete(const std::function<void()> & f)
 {
     _onConcrete = f;
+}
+
+std::string ChooseWplatyFrame::getInstruktor()
+{
+    return std::string(_instruktorInput->GetString(_instruktorInput->GetSelection()));
 }
 
 

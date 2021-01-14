@@ -57,8 +57,8 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
     if(s == "wplaty")
     {
         std::vector<std::vector<std::string>> res;
-        res.push_back({"Jan","Kowalski", "120", "15-03-2020"});
-        res.push_back({"Adam","Kasprzak", "180", "29-04-2020"});
+        res.push_back({"1","Jan","Kowalski", "120", "15-03-2020"});
+        res.push_back({"2","Adam","Kasprzak", "180", "29-04-2020"});
         return res;
     }
 
@@ -74,6 +74,14 @@ std::vector<std::vector<std::string>> DBService::getStanyInstruktora(const std::
     };
 }
 
+std::vector<std::vector<std::string>> DBService::getWplatyInstruktora(const std::string & instruktor)
+{
+     std::vector<std::vector<std::string>> res;
+        res.push_back({"1","Jan","Kowalski", "120", "15-03-2020"});
+        res.push_back({"2","Jan","Kowalski", "180", "29-04-2020"});
+        return res;
+}
+
 std::vector<std::string> DBService::getPossibleHufcowi()
 {
     return {"Jan Kowalski", "Antoni Kozanecki"};
@@ -83,6 +91,12 @@ std::vector<std::string> DBService::getPossibleDruzynowi()
 {
     return {"Jan Kowalski", "Antoni Kozanecki"};
 }
+
+std::vector<std::string> DBService::getAllInstruktorzy()
+{
+    return {"Jan Kowalski", "Antoni Kozanecki"};
+}
+
 std::vector<std::string> DBService::getPossibleHufce()
 {
     return {"Gniazdo", "Test"};
@@ -166,6 +180,19 @@ bool DBService::insertOkres(const std::vector<std::string> & okres)
 }
 
 bool DBService::deleteOkres(const std::string & dataPocz)
+{
+    return false;
+}
+
+bool DBService::updateWplata(const std::string & id, const std::vector<std::string> & wplata)
+{
+    return false;
+}
+bool DBService::insertWplata(const std::vector<std::string> & wplata)
+{
+    return false;
+}
+bool DBService::deleteWplata(const std::string & id)
 {
     return false;
 }
