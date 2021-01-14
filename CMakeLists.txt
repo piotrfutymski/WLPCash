@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(WLPCash VERSION 0.1.0)
 
+SET(CXX_STANDARD 11)
+SET(CXX_STANDARD_REQUIRED TRUE)
+SET(SOCI_CXX11 ON)
+SET(SOCI_TESTS OFF)
+
 if(WIN32)
 	set(wxWidgets_ROOT_DIR C:/Users/Jakub/source/lib/wxWidgets-3.1.4)
 	set(wxWidgets_LIB_DIR C:/Users/Jakub/source/lib/wxWidgets-3.1.4/lib/vc_x64_lib)
@@ -9,6 +14,8 @@ endif()
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 
 add_subdirectory(lib/SOCI)
+
+
 
 include_directories("include" "lib/SOCI/include" "build/lib/SOCI/include")
 

@@ -1,12 +1,12 @@
 #include "DBService.h"
 
 void DBService::init()
-{
+{   
     try {
-        sql = new soci::session("oracle", "service=//admlab2.cs.put.poznan.pl:1521/dblab02_students user=inf141216 password=inf141216");
+        sql = new soci::session(soci::odbc, "service=//admlab2.cs.put.poznan.pl:1521/dblab02_students user=inf141216 password=inf141216");
     }
     catch(std::exception e){
-        std::cerr << e.what() << std::endl;
+        std::cout << e.what() << std::endl;
     }
 }
 

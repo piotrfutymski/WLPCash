@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <soci/soci.h>
+#include <soci/odbc/soci-odbc.h>
 #include <iostream>
 
 
