@@ -3,7 +3,7 @@
 void DBService::init()
 {   
     try {
-        sql = new soci::session(soci::odbc, "service=//admlab2.cs.put.poznan.pl:1521/dblab02_students user=inf141216 password=inf141216");
+        sql = new soci::session(soci::odbc, "dsn=OracleODBC-21");
     }
     catch(std::exception e){
         std::cout << e.what() << std::endl;
