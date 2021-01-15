@@ -4,7 +4,7 @@
 #include <soci/soci.h>
 #include <soci/odbc/soci-odbc.h>
 #include <iostream>
-
+#define MAX_ROWS 1000
 
 
 class DBService

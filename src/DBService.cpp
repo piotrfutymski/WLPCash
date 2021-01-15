@@ -5,8 +5,13 @@ void DBService::init()
     try {
         sql = new soci::session(soci::odbc, "dsn=OracleODBC-21");
     }
-    catch(std::exception e){
-        std::cout << e.what() << std::endl;
+    catch(const soci::soci_error e)
+    {
+         std::cout << e.what() << std::endl;
+    }
+    catch(const std::exception e)
+    {
+         std::cout << e.what() << std::endl;
     }
 }
 
@@ -18,21 +23,28 @@ void DBService::close()
 
 std::vector<std::vector<std::string>> DBService::getTableData(const std::string & s)
 {
+    try
+    {
+    
     if(s == "hufce")
     {
         std::vector<std::vector<std::string>> res;
-        res.push_back({"Gniazdo","Antoni Kozanecki"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test","Jan Kowalski"});
-        res.push_back({"Test-10","Jan Kowalski"});
-        res.push_back({"Test-11","Jan Kowalski"});
-        res.push_back({"Test-12","Jan Kowalski"});
+        std::vector<std::string> hufces;
+        std::vector<std::string> hufcowis;
+
+        int count;
+        *sql<<"select count(*) from hufce;", soci::into(count);
+
+        hufces.resize(count);
+        hufcowis.resize(count);
+
+        *sql<<"select h.nazwa, i.imie || ' ' || i.nazwisko from hufce h left outer join hufcowi huf \
+                on (h.nazwa = huf.hufiec) left outer join instruktorzy i on(huf.hufcowy = i.id_instr);", soci::into(hufces), soci::into(hufcowis);            
+
+        for(int i = 0; i < hufces.size(); i++)
+        {
+            res.push_back({hufces[i],hufcowis[i]});
+        }
         return res;
     }
 
@@ -47,8 +59,36 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
     if(s == "instruktorzy")
     {
         std::vector<std::vector<std::string>> res;
-        res.push_back({"1","Jan", "Kowalski", "jan.kowalski@123.pl", "L05/2020", "phm.", "HR", "Gniazdo"});
-        res.push_back({"2","Jan", "Kowalski2", "jan.kowalski@321.pl", "L05/2020", "phm.", "HR", "Gniazdo"});
+        std::vector<std::string> ids;
+        std::vector<std::string> imies;
+        std::vector<std::string> nazwiskas;
+        std::vector<std::string> emails;
+        std::vector<std::string> rozkaz_s;
+        std::vector<std::string> st_instrs;
+        std::vector<std::string> st_harcerskis;    
+        std::vector<std::string> hufce_s;
+
+        int count;
+        *sql<<"select count(*) from instruktorzy;", soci::into(count);
+
+
+        ids.resize(count);
+        imies.resize(count);
+        nazwiskas.resize(count);
+        emails.resize(count);
+        rozkaz_s.resize(count);
+        st_instrs.resize(count);
+        st_harcerskis.resize(count);
+        hufce_s.resize(count);
+
+        *sql<<"select id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, hufiec from instruktorzy order by nazwisko;", 
+        soci::into(ids), soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(rozkaz_s), 
+        soci::into(st_instrs), soci::into(st_harcerskis), soci::into(hufce_s);
+
+        for(int i = 0; i < ids.size(); i++)
+        {
+            res.push_back({ids[i],imies[i],nazwiskas[i],emails[i],rozkaz_s[i],st_instrs[i],st_harcerskis[i],hufce_s[i]});
+        }
         return res;
     }
 
@@ -69,8 +109,16 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
         return res;
     }
 
-    return {{}};
-
+    }
+    catch(const soci::soci_error e)
+    {
+        return {{}};
+    }
+    catch(const std::exception e)
+    {
+        return {{}};
+    }
+   return {{}};
 }
 
 std::vector<std::vector<std::string>> DBService::getStanyInstruktora(const std::string & instruktor)
@@ -109,7 +157,30 @@ std::vector<std::vector<std::string>> DBService::getOpoznieniaData(const std::ve
 
 std::vector<std::string> DBService::getPossibleHufcowi()
 {
-    return {"Jan Kowalski", "Antoni Kozanecki"};
+    try
+    {
+
+    std::vector<std::string> res;
+
+    int count;
+    *sql<<"select count(*) from instruktorzy;", soci::into(count);
+
+    res.resize(count);
+
+    *sql<<"select imie || ' ' || nazwisko from instruktorzy order by nazwisko;", soci::into(res);
+    return res;
+
+    }
+    catch(const soci::soci_error e)
+    {
+        return {};
+    }
+    catch(const std::exception e)
+    {
+        return {};
+    }
+
+    return {};
 }
 
 std::vector<std::string> DBService::getPossibleDruzynowi()
@@ -154,7 +225,24 @@ bool DBService::updateHufiec(const std::string & nazwa, const std::vector<std::s
 
 bool DBService::insertHufiec(const std::vector<std::string> & hufiec)
 {
-    return false;
+    try
+    {   
+        if(hufiec.size() != 2)
+            return false;
+        *sql<<"BEGIN dodajHufiec(?,?); END;", soci::use(hufiec[0]) ,soci::use(hufiec[1]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const soci::soci_error e)
+    {
+        return false;
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+
+   
+    return true;
 }
 
 bool DBService::deleteHufiec(const std::string & nazwa)
