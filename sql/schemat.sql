@@ -200,6 +200,21 @@ BEGIN
   return vRes;
 END;
 
+CREATE OR REPLACE FUNCTION czyUzupelnionoDo
+(
+  pID IN INSTRUKTORZY.ID_INSTR%TYPE,
+  pKoniec IN VARCHAR2(64)
+)RETURNS CHAR(3) IS
+  vKoniec DATE;
+  vRes CHAR(3)
+BEGIN
+  vKoniec = to_date(pKoniec, 'dd-mm-yyyy');
+  IF vKoniec < doKiedyUzupelniono(pID);
+    return 'TAK';
+  END IF;
+  return 'NIE';
+END;
+
 CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
 (
 	pNazwa IN STOPNIE_INSTRUKTORSKIE.NAZWA%TYPE
