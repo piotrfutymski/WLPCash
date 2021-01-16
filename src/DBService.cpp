@@ -474,10 +474,6 @@ std::vector<std::string> DBService::getAllInstruktorzy()
     return res;
 
     }
-    catch(const soci::soci_error e)
-    {
-        return {};
-    }
     catch(const std::exception e)
     {
         return {};
@@ -502,10 +498,6 @@ std::vector<std::string> DBService::getPossibleHufce()
     return res;
 
     }
-    catch(const soci::soci_error e)
-    {
-        return {};
-    }
     catch(const std::exception e)
     {
         return {};
@@ -528,10 +520,6 @@ std::vector<std::string> DBService::getPossibleTypyDruzyn()
     *sql<<"select nazwa from typy_druzyn order by nazwa;", soci::into(res);
     return res;
 
-    }
-    catch(const soci::soci_error e)
-    {
-        return {};
     }
     catch(const std::exception e)
     {
@@ -557,10 +545,6 @@ std::vector<std::string> DBService::getPossibleStopnieInstr()
     return res;
 
     }
-    catch(const soci::soci_error e)
-    {
-        return {};
-    }
     catch(const std::exception e)
     {
         return {};
@@ -583,10 +567,6 @@ std::vector<std::string> DBService::getPossibleStopnieHarc()
     *sql<<"select nazwa from stopnie_harcerskie order by nazwa;", soci::into(res);
     return res;
 
-    }
-    catch(const soci::soci_error e)
-    {
-        return {};
     }
     catch(const std::exception e)
     {
@@ -612,10 +592,6 @@ std::vector<std::string> DBService::getPossibleStatusy()
     return res;
 
     }
-    catch(const soci::soci_error e)
-    {
-        return {};
-    }
     catch(const std::exception e)
     {
         return {};
@@ -628,7 +604,19 @@ std::vector<std::string> DBService::getPossibleStatusy()
 
 bool DBService::updateHufiec(const std::string & nazwa, const std::vector<std::string> & hufiec)
 {
-    return false;
+    try
+    {   
+        if(hufiec.size() != 2)
+            return false;
+        *sql<<"BEGIN modyfikujHufiec(?,?,?); END;",soci::use(nazwa), soci::use(hufiec[0]) ,soci::use(hufiec[1]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::insertHufiec(const std::vector<std::string> & hufiec)
@@ -640,89 +628,274 @@ bool DBService::insertHufiec(const std::vector<std::string> & hufiec)
         *sql<<"BEGIN dodajHufiec(?,?); END;", soci::use(hufiec[0]) ,soci::use(hufiec[1]);
         *sql<<"BEGIN commit; END;";
     }
-    catch(const soci::soci_error e)
-    {
-        return false;
-    }
     catch(const std::exception e)
     {
         return false;
     }
-
    
     return true;
 }
 
 bool DBService::deleteHufiec(const std::string & nazwa)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunHufiec(?); END;", soci::use(nazwa);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::updateDruzyna(const std::string & nazwa, const std::string & numer, const std::vector<std::string> & druzyna)
 {
-    return false;
+    try
+    {   
+        if(druzyna.size() != 7)
+            return false;
+        *sql<<"BEGIN modyfikujDruzyne(?,?,?,?,?,?,?,?,?); END;",soci::use(nazwa),soci::use(numer), 
+        soci::use(druzyna[0]) ,soci::use(druzyna[1]),soci::use(druzyna[2]) ,soci::use(druzyna[3]),
+        soci::use(druzyna[4]) ,soci::use(druzyna[5]),soci::use(druzyna[6]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::insertDruzyna(const std::vector<std::string> & druzyna)
 {
-    return false;
+    try
+    {   
+        if(druzyna.size() != 7)
+            return false;
+        *sql<<"BEGIN dodajDruzyne(?,?,?,?,?,?,?); END;", 
+        soci::use(druzyna[0]) ,soci::use(druzyna[1]),soci::use(druzyna[2]) ,soci::use(druzyna[3]),
+        soci::use(druzyna[4]) ,soci::use(druzyna[5]),soci::use(druzyna[6]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::deleteDruzyna(const std::string & nazwa, const std::string & numer)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunDruzyne(?,?); END;",soci::use(nazwa),soci::use(numer); 
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::updateInstruktor(const std::string & imie, const std::string & nazwisko, const std::vector<std::string> & instruktor)
 {
-    return false;
+    try
+    {   
+        if(instruktor.size() != 7)
+            return false;
+        *sql<<"BEGIN modyfikujInstruktora(?,?,?,?,?,?,?,?,?); END;",soci::use(imie),soci::use(nazwisko), 
+        soci::use(instruktor[0]) ,soci::use(instruktor[1]),soci::use(instruktor[2]) ,soci::use(instruktor[3]),
+        soci::use(instruktor[4]) ,soci::use(instruktor[5]),soci::use(instruktor[6]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::insertInstruktor(const std::vector<std::string> & instruktor)
 {
-    return false;
+    try
+    {   
+        if(instruktor.size() != 10)
+            return false;
+        *sql<<"BEGIN dodajInstruktora(?,?,?,?,?,?,?,?,?,?); END;",
+        soci::use(instruktor[0]) ,soci::use(instruktor[1]),soci::use(instruktor[2]) ,soci::use(instruktor[3]),
+        soci::use(instruktor[4]) ,soci::use(instruktor[5]),soci::use(instruktor[6]), soci::use(instruktor[7]),
+        soci::use(instruktor[8]), soci::use(instruktor[9]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::deleteInstruktor(const std::string & imie, const std::string & nazwisko)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunInstruktora(?,?); END;",soci::use(imie),soci::use(nazwisko); 
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 
 bool DBService::insertStatus(const std::vector<std::string> & status)
 {
-    return false;
+    try
+    {   
+        if(status.size() != 5)
+            return false;
+        *sql<<"BEGIN dodajStatus(?,?,?,?,?); END;",
+        soci::use(status[0]) ,soci::use(status[1]),soci::use(status[2]) ,soci::use(status[3]),
+        soci::use(status[4]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::deleteStatus(const std::string & dataPocz, const std::string & instruktor)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunStatus(?,?); END;", soci::use(dataPocz),soci::use(instruktor);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::insertOkres(const std::vector<std::string> & okres)
 {
-    return false;
+    try
+    {   
+        if(okres.size() != 4)
+            return false;
+        *sql<<"BEGIN dodajOkresSladkowy(?,?,?); END;",
+        soci::use(okres[0]) ,soci::use(okres[1]),soci::use(okres[2]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::deleteOkres(const std::string & dataPocz)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunOkresSladkowy(?); END;", soci::use(dataPocz);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+    return true;
 }
 
 bool DBService::updateWplata(const std::string & id, const std::vector<std::string> & wplata)
 {
-    return false;
+    try
+    {   
+        if(wplata.size() != 5)
+            return false;
+        *sql<<"BEGIN modyfikujWplate(?,?,?,?,?,?); END;", soci::use(id),
+        soci::use(wplata[0]) ,soci::use(wplata[1]),soci::use(wplata[2]),soci::use(wplata[3]) ,soci::use(wplata[4]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::insertWplata(const std::vector<std::string> & wplata)
 {
-    return false;
+    try
+    {   
+        if(wplata.size() != 5)
+            return false;
+        *sql<<"BEGIN dodajWplate(?,?,?,?,?); END;",
+        soci::use(wplata[0]) ,soci::use(wplata[1]),soci::use(wplata[2]),soci::use(wplata[3]) ,soci::use(wplata[4]);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 bool DBService::deleteWplata(const std::string & id)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN usunWplate(?); END;", soci::use(id);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+   
+    return true;
 }
 
 bool DBService::resetBaza(const std::string & data)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN resetBazy(?); END;", soci::use(data);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+    return true;
 }
+
+
 bool DBService::resetWplaty(const std::string & data)
 {
-    return false;
+    try
+    {   
+        *sql<<"BEGIN resetWplat(?); END;", soci::use(data);
+        *sql<<"BEGIN commit; END;";
+    }
+    catch(const std::exception e)
+    {
+        return false;
+    }
+    return true;
 }
+
