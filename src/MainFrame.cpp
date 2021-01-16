@@ -278,7 +278,8 @@ MainFrame::MainFrame()
     _chooseWplatyFrame->setOnConcrete([&](){
         closeAll();    
         _wplatyFrame->Show();
-        _wplatyFrame->fillData(_db.getWplatyInstruktora(_chooseWplatyFrame->getInstruktor()));
+        auto data = _db.getWplatyInstruktora(_chooseWplatyFrame->getInstruktor());
+        _wplatyFrame->fillData(data);
         _wplatyFrame->reload();
         _wplatyFrame->setValue(_chooseWplatyFrame->getInstruktor());
     });
