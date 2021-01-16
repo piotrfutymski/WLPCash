@@ -126,8 +126,8 @@ MainFrame::MainFrame()
         _druzynaForm->setNumer("");
         _druzynaForm->setPatron("");
 
-        _hufiecForm->setModify(false);
-        _hufiecForm->reload();
+        _druzynaForm->setModify(false);
+        _druzynaForm->reload();
     });
 
     _druzynaForm = std::make_unique<DruzynaForm>(wxWindowID(ID::DRUZYNY)+2000, &_db);
