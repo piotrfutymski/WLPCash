@@ -97,12 +97,12 @@ CREATE SEQUENCE instruktorzy_id_seq START WITH 1 INCREMENT BY 1;
 CREATE OR REPLACE FUNCTION sumaSkladekInstruktoraWOkresie
 (
   pID IN INSTRUKTORZY.ID_INSTR%TYPE,
-  pPoczatek IN VARCHAR2(64),
-  pKoniec IN VARCHAR2(64)
-) RETURN NUMBER(11,2) IS
+  pPoczatek IN VARCHAR,
+  pKoniec IN VARCHAR
+) RETURN NUMBER IS
   vPoczatek DATE;
   vKoniec DATE;
-  vSuma NUMBER(11,2);
+  vSuma NUMBER;
 BEGIN
   vPoczatek := to_date(pPoczatek,'DD-MM-YYYY');
   vKoniec := to_date(pKoniec,'DD-MM-YYYY');
@@ -116,12 +116,12 @@ END;
 CREATE OR REPLACE FUNCTION sumaSkladekHufcaWOkresie
 (
   pNazwa IN HUFCE.NAZWA%TYPE,
-  pPoczatek IN VARCHAR2(64),
-  pKoniec IN VARCHAR2(64)
-)RETURN NUMBER(11,2) IS
+  pPoczatek IN VARCHAR,
+  pKoniec IN VARCHAR
+)RETURN NUMBER IS
   vPoczatek DATE;
   vKoniec DATE;
-  vSuma NUMBER(11,2);
+  vSuma NUMBER;
 BEGIN
   vPoczatek := to_date(pPoczatek,'DD-MM-YYYY');
   vKoniec := to_date(pKoniec,'DD-MM-YYYY');
@@ -134,9 +134,9 @@ END;
 
 CREATE OR REPLACE FUNCTION naleznoscInstruktoraDo
 (
-  pID IN INSTRUKTORZY.ID_INSTR%TYPE
-  pBariera DATE;
-)RETURN NUMBER(11,2) IS
+  pID IN INSTRUKTORZY.ID_INSTR%TYPE,
+  pBariera DATE
+)RETURN NUMBER IS
 
   CURSOR cStany IS 
   SELECT * FROM STANY_INSTRUKTOROW
@@ -146,8 +146,8 @@ CREATE OR REPLACE FUNCTION naleznoscInstruktoraDo
   vStan STANY_INSTRUKTOROW%ROWTYPE;
   vD DATE;
   vKoniec DATE;
-  vKwota NUMBER(11,2);
-  vSuma NUMBER(11,2) DEFAULT 0;
+  vKwota NUMBER;
+  vSuma NUMBER DEFAULT 0;
 BEGIN
   OPEN cStany;
   LOOP
@@ -184,8 +184,8 @@ CREATE OR REPLACE FUNCTION doKiedyUzupelniono
 (
   pID IN INSTRUKTORZY.ID_INSTR%TYPE
 ) RETURN DATE IS
-  vZaplaconed NUMBER(11,2);
-  vWymaganed NUMBER(11,2);
+  vZaplaconed NUMBER;
+  vWymaganed NUMBER;
   vRes DATE;
 BEGIN
   SELECT MIN(poczatek) INTO vRes FROM STANY_INSTRUKTOROW
@@ -195,7 +195,7 @@ BEGIN
   LOOP
     vWymaganed := naleznoscInstruktoraDo(pID, LAST_DAY(vRes+1));
     EXIT WHEN vWymaganed > vZaplaconed;
-    vRes = LAST_DAY(vRes+1);
+    vRes := LAST_DAY(vRes+1);
   END LOOP;
 
   return vRes;
@@ -204,13 +204,12 @@ END;
 CREATE OR REPLACE FUNCTION czyUzupelnionoDo
 (
   pID IN INSTRUKTORZY.ID_INSTR%TYPE,
-  pKoniec IN VARCHAR2(64)
-)RETURN CHAR(3) IS
+  pKoniec IN VARCHAR
+)RETURN VARCHAR IS
   vKoniec DATE;
-  vRes CHAR(3)
 BEGIN
-  vKoniec = to_date(pKoniec, 'dd-mm-yyyy');
-  IF vKoniec < doKiedyUzupelniono(pID);
+  vKoniec := to_date(pKoniec, 'dd-mm-yyyy');
+  IF vKoniec < doKiedyUzupelniono(pID) THEN
     return 'TAK';
   END IF;
   return 'NIE';
@@ -250,6 +249,8 @@ BEGIN
     INSERT INTO hufcowi(hufiec, hufcowy)
     VALUES(pHufiec, vID);
 END;
+
+--gdfgfdgdf
 
 CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
 (
