@@ -95,9 +95,9 @@ CREATE SEQUENCE instruktorzy_id_seq START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE FUNCTION sumaSkladekInstruktoraWOkresie
 (
-  pID IN INSTRUKTORZY.ID_INSTR%TYPE;
-  pPoczatek IN VARCHAR2(64);
-  pKoniec IN VARCHAR2(64);
+  pID IN INSTRUKTORZY.ID_INSTR%TYPE,
+  pPoczatek IN VARCHAR2(64),
+  pKoniec IN VARCHAR2(64)
 ) RETURNS NUMBER(11,2) IS
   vPoczatek DATE;
   vKoniec DATE;
@@ -109,6 +109,25 @@ BEGIN
   WHERE data >= vPoczatek AND data < vKoniec
   GROUP BY instruktor
   HAVING instruktor = pID;
+  return vSuma;
+END;
+
+CREATE OR REPLACE FUNCTION sumaSkladekHufcaWOkresie
+(
+  pNazwa IN HUFCE.NAZWA%TYPE,
+  pPoczatek IN VARCHAR2(64),
+  pKoniec IN VARCHAR2(64)
+)RETURNS NUMBER(11,2) IS
+  vPoczatek DATE;
+  vKoniec DATE;
+  vSuma NUMBER(11,2);
+BEGIN
+  vPoczatek := to_date(pPoczatek,'DD-MM-YYYY');
+  vKoniec := to_date(pKoniec,'DD-MM-YYYY');
+  SELECT SUM(kwota) INTO vSuma FROM WPLATY INNER JOIN INSTRUKTORZY ON(instruktor = id_instr)
+  WHERE data >= vPoczatek AND data < vKoniec
+  GROUP BY hufiec
+  HAVING hufiec IS NOT NULL AND hufiec = pNazwa;
   return vSuma;
 END;
 
