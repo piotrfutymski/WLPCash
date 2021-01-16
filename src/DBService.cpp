@@ -870,11 +870,11 @@ bool DBService::deleteWplata(const std::string & id)
     return true;
 }
 
-bool DBService::resetBaza(const std::string & data)
+bool DBService::resetBaza()
 {
     try
     {   
-        *sql<<"BEGIN resetBazy(?); END;", soci::use(data);
+        *sql<<"BEGIN resetBazy(); END;";
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -885,11 +885,11 @@ bool DBService::resetBaza(const std::string & data)
 }
 
 
-bool DBService::resetWplaty(const std::string & data)
+bool DBService::resetWplaty()
 {
     try
     {   
-        *sql<<"BEGIN resetWplat(?); END;", soci::use(data);
+        *sql<<"BEGIN resetWplat(); END;";
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)

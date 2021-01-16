@@ -5,10 +5,7 @@ ResetFrame::ResetFrame(int ID, DBService * db)
 {
     _panel = std::make_unique<wxPanel>(this, -1);
 
-    _label = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Wybierz datę do kiedy ma trwać zerowy okres składkowy"), wxPoint(20,20), wxSize(300,100));
-
-    _dataMInput = std::make_unique<wxTextCtrl>(_panel.get(), wxWindowID(ID::DATA_M), wxT(""), wxPoint(70,80), wxSize(40,30));
-    _dataRInput = std::make_unique<wxTextCtrl>(_panel.get(), wxWindowID(ID::DATA_R), wxT(""), wxPoint(120,80), wxSize(80,30));
+    _label = std::make_unique<wxStaticText>(_panel.get(), wxID_ANY, wxT("Pierwszy okres składkowy będzie wynosił 0 zł i rozpocznie się 01.2020"), wxPoint(20,20), wxSize(300,150));
 
     _okButton = std::make_unique<wxButton>(_panel.get(), wxWindowID(ID::OK), wxT("OK") ,wxPoint(290, 150), wxSize(50,30));
 
@@ -31,8 +28,6 @@ void ResetFrame::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial1, dial2;
     bool res = false;
 
-    auto str = std::string(_dataMInput->GetValue()) + "-" + std::string(_dataRInput->GetValue());
-
     dial1 = std::make_unique<wxMessageDialog>(nullptr, wxT("Czy na pewno chcesz dokonac resetu? Ta operacja jest nieodwołalna"), wxT("Info"), wxYES_NO);
 
     if(dial1->ShowModal() != wxID_YES)
@@ -40,7 +35,7 @@ void ResetFrame::onOK(wxCommandEvent & event)
 
     if(_onlyWplaty)
     {
-        res = _db->resetWplaty(str);
+        res = _db->resetWplaty();
         if(res)
         {
             dial2 = std::make_unique<wxMessageDialog>(nullptr, wxT("Zresetowano Wpłaty"), wxT("Info"), wxOK);
@@ -52,7 +47,7 @@ void ResetFrame::onOK(wxCommandEvent & event)
     }
     else
     {
-        res = _db->resetBaza(str);
+        res = _db->resetBaza();
         if(res)
         {
             dial2 = std::make_unique<wxMessageDialog>(nullptr, wxT("Zresetowano Bazę"), wxT("Info"), wxOK);

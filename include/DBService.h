@@ -60,8 +60,8 @@ public:
 
     //
 
-    bool resetBaza(const std::string & data);
-    bool resetWplaty(const std::string & data);
+    bool resetBaza();
+    bool resetWplaty();
 
 private:
     soci::session *sql;
