@@ -309,8 +309,8 @@ std::vector<std::vector<std::string>> DBService::getWplatyIndData(const std::vec
         hufce_s.resize(count);
         kwota_s.resize(count);
 
-        *sql<<"select imie, nazwisko, email, st_instr, hufiec, sumaSkladekInstruktoraWOkresie(id_instr, ?,?,?,?,?,?) from instruktorzy order by nazwisko;", 
-        soci::use(dat[0]),soci::use(dat[1]),soci::use(dat[2]),soci::use(dat[3]),soci::use(dat[4]),soci::use(dat[5]),
+        *sql<<"select imie, nazwisko, email, st_instr, hufiec, sumaSkladekInstruktoraWOkresie(id_instr, ?,?) from instruktorzy order by nazwisko;", 
+        soci::use(DateConverter::glue(dat[0],dat[1],dat[2])),soci::use(DateConverter::glue(dat[3],dat[4],dat[5])),
         soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(st_instrs), soci::into(hufce_s),  soci::into(kwota_s);
 
         for(int i = 0; i < count; i++)
@@ -345,7 +345,7 @@ std::vector<std::vector<std::string>> DBService::getWplatyHufData(const std::vec
     kwota.resize(count);
 
     *sql<<"select nazwa, sumaSkladekHufcaWOkresie(nazwa, ?,?,?,?,?,?) from hufce order by nazwa;", 
-    soci::use(dat[0]),soci::use(dat[1]),soci::use(dat[2]),soci::use(dat[3]),soci::use(dat[4]),soci::use(dat[5]),
+    soci::use(DateConverter::glue(dat[0],dat[1],dat[2])),soci::use(DateConverter::glue(dat[3],dat[4],dat[5])),
     soci::into(nazwa), soci::into(kwota);
     
     for(int i = 0; i < count; i++)
@@ -431,7 +431,8 @@ std::vector<std::vector<std::string>> DBService::getOpoznieniaData(const std::ve
         hufce_s.resize(count);
         uzupelnie_s.resize(count);
 
-        *sql<<"select imie, nazwisko, email, st_instr, hufiec, doKiedyUzupelniono(id_instr) from instruktorzy where czyUzupelnionoDo(id_instr,?,?,?) = 'NIE' order by nazwisko;", 
+        *sql<<"select imie, nazwisko, email, st_instr, hufiec, doKiedyUzupelniono(id_instr) from instruktorzy where czyUzupelnionoDo(id_instr,?) = 'NIE' order by nazwisko;",
+        soci::use(DateConverter::glue(dat[0],dat[1],dat[2])),
         soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(st_instrs), soci::into(hufce_s),  soci::into(uzupelnie_s);
 
         for(int i = 0; i < count; i++)
@@ -726,10 +727,10 @@ bool DBService::insertInstruktor(const std::vector<std::string> & instruktor)
     {   
         if(instruktor.size() != 10)
             return false;
-        *sql<<"BEGIN dodajInstruktora(?,?,?,?,?,?,?,?,?,?); END;",
+        *sql<<"BEGIN dodajInstruktora(?,?,?,?,?,?,?,?); END;",
         soci::use(instruktor[0]) ,soci::use(instruktor[1]),soci::use(instruktor[2]) ,soci::use(instruktor[3]),
-        soci::use(instruktor[4]) ,soci::use(instruktor[5]),soci::use(instruktor[6]), soci::use(instruktor[7]),
-        soci::use(instruktor[8]), soci::use(instruktor[9]);
+        soci::use(instruktor[4]) ,soci::use(instruktor[5]),soci::use(instruktor[6]),
+        soci::use(DateConverter::glue(instruktor[7],instruktor[8],instruktor[9]));
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -761,9 +762,8 @@ bool DBService::insertStatus(const std::vector<std::string> & status)
     {   
         if(status.size() != 5)
             return false;
-        *sql<<"BEGIN dodajStatus(?,?,?,?,?); END;",
-        soci::use(status[0]) ,soci::use(status[1]),soci::use(status[2]) ,soci::use(status[3]),
-        soci::use(status[4]);
+        *sql<<"BEGIN dodajStatus(?,?,?); END;",
+        soci::use(status[0]) ,soci::use(status[1]),soci::use(DateConverter::glue(status[2],status[3],status[4]));
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -795,8 +795,8 @@ bool DBService::insertOkres(const std::vector<std::string> & okres)
     {   
         if(okres.size() != 4)
             return false;
-        *sql<<"BEGIN dodajOkresSladkowy(?,?,?); END;",
-        soci::use(okres[0]) ,soci::use(okres[1]),soci::use(okres[2]);
+        *sql<<"BEGIN dodajOkresSladkowy(?,?); END;",
+        soci::use(okres[0]) ,soci::use(DateConverter::glue("1",okres[1],okres[2]));
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -811,7 +811,7 @@ bool DBService::deleteOkres(const std::string & dataPocz)
 {
     try
     {   
-        *sql<<"BEGIN usunOkresSladkowy(?); END;", soci::use(dataPocz);
+        *sql<<"BEGIN usunOkresSladkowy(?); END;", soci::use("01-"+dataPocz);
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -827,8 +827,8 @@ bool DBService::updateWplata(const std::string & id, const std::vector<std::stri
     {   
         if(wplata.size() != 5)
             return false;
-        *sql<<"BEGIN modyfikujWplate(?,?,?,?,?,?); END;", soci::use(id),
-        soci::use(wplata[0]) ,soci::use(wplata[1]),soci::use(wplata[2]),soci::use(wplata[3]) ,soci::use(wplata[4]);
+        *sql<<"BEGIN modyfikujWplate(?,?,?,?); END;", soci::use(id),
+        soci::use(wplata[0]) ,soci::use(wplata[1]), DateConverter::glue(wplata[2],wplata[3],wplata[4]);
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -844,8 +844,8 @@ bool DBService::insertWplata(const std::vector<std::string> & wplata)
     {   
         if(wplata.size() != 5)
             return false;
-        *sql<<"BEGIN dodajWplate(?,?,?,?,?); END;",
-        soci::use(wplata[0]) ,soci::use(wplata[1]),soci::use(wplata[2]),soci::use(wplata[3]) ,soci::use(wplata[4]);
+        *sql<<"BEGIN dodajWplate(?,?,?); END;",
+        soci::use(wplata[0]) ,soci::use(wplata[1]), DateConverter::glue(wplata[2],wplata[3],wplata[4]);
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -898,4 +898,3 @@ bool DBService::resetWplaty(const std::string & data)
     }
     return true;
 }
-
