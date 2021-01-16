@@ -106,7 +106,7 @@ BEGIN
   vPoczatek := to_date(pPoczatek,'DD-MM-YYYY');
   vKoniec := to_date(pKoniec,'DD-MM-YYYY');
   SELECT SUM(kwota) INTO vSuma FROM WPLATY
-  WHERE data >= vPoczatek AND data < vKoniec
+  WHERE data >= vPoczatek AND data <= vKoniec
   GROUP BY instruktor
   HAVING instruktor = pID;
   return vSuma;
@@ -125,10 +125,67 @@ BEGIN
   vPoczatek := to_date(pPoczatek,'DD-MM-YYYY');
   vKoniec := to_date(pKoniec,'DD-MM-YYYY');
   SELECT SUM(kwota) INTO vSuma FROM WPLATY INNER JOIN INSTRUKTORZY ON(instruktor = id_instr)
-  WHERE data >= vPoczatek AND data < vKoniec
+  WHERE data >= vPoczatek AND data <= vKoniec
   GROUP BY hufiec
   HAVING hufiec IS NOT NULL AND hufiec = pNazwa;
   return vSuma;
+END;
+
+CREATE OR REPLACE FUNCTION naleznoscInstruktora
+(
+  pID IN INSTRUKTORZY.ID_INSTR%TYPE
+)RETURNS NUMBER(11,2) IS
+
+  CURSOR cStany IS 
+  SELECT * FROM STANY_INSTRUKTOROW
+  WHERE instruktor = pID
+  ORDER BY poczatek;
+  
+  vStan STANY_INSTRUKTOROW%ROWTYPE;
+  vD DATE;
+  vKoniec DATE;
+  vKwota NUMBER(11,2);
+  vSuma NUMBER(11,2) DEFAULT 0;
+BEGIN
+  OPEN cStany;
+  LOOP
+    FETCH cStany INTO vStan;
+    EXIT WHEN cStany%NOTFOUND;
+
+    IF vStan.status IN ('CZYNNY', 'REZERWA') THEN
+      vD := vStan.poczatek;
+      IF vStan.koniec IS NOT NULL THEN
+        vKoniec := vStan.koniec;
+      ELSE
+        vKoniec := CURRENT_DATE;
+      END IF;
+      IF EXTRACT(DAY FROM vD) > 1 THEN
+        vD := LAST_DAY(LAST_DAY(vD)+1);
+      ELSE
+        vD := LAST_DAY(vD);
+      END IF;
+      WHILE vD < vKoniec LOOP
+        SELECT kwota into vKwota FROM OKRESY_SKLADKOWE
+        WHERE poczatek <= vd AND koniec >= vd;
+        vSuma := vSuma + vKwota;
+        vD := LAST_DAY(vD+1);
+      END LOOP;
+    END IF;
+  END LOOP;
+  
+  CLOSE cStany;
+  return vSuma;
+END;
+
+
+CREATE OR REPLACE FUNCTION doKiedyUzupelniono
+(
+  id_instr IN INSTRUKTORZY.ID_INSTR%TYPE
+) RETURNS DATE IS
+  vRes DATE
+BEGIN
+
+  return vRes;
 END;
 
 CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
