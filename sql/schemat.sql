@@ -261,6 +261,14 @@ BEGIN
     INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
 END;
 
+create or replace PROCEDURE ResetWplat IS
+BEGIN
+    DELETE FROM WPLATY;
+    DELETE FROM OKRESY_SKLADKOWE;
+    
+    INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
+END;
+
 create or replace PROCEDURE DodajHufiec
 (
     pImieNazwisko IN instruktorzy.imie%TYPE,
