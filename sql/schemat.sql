@@ -131,9 +131,10 @@ BEGIN
   return vSuma;
 END;
 
-CREATE OR REPLACE FUNCTION naleznoscInstruktora
+CREATE OR REPLACE FUNCTION naleznoscInstruktoraDo
 (
   pID IN INSTRUKTORZY.ID_INSTR%TYPE
+  pBariera DATE;
 )RETURNS NUMBER(11,2) IS
 
   CURSOR cStany IS 
@@ -154,19 +155,19 @@ BEGIN
 
     IF vStan.status IN ('CZYNNY', 'REZERWA') THEN
       vD := vStan.poczatek;
-      IF vStan.koniec IS NOT NULL THEN
-        vKoniec := vStan.koniec;
+      IF vStan.koniec IS NULL OR pBariera <= vStan.koniec THEN
+        vKoniec := pBariera;
       ELSE
-        vKoniec := CURRENT_DATE;
+        vKoniec := vStan.koniec;
       END IF;
       IF EXTRACT(DAY FROM vD) > 1 THEN
         vD := LAST_DAY(LAST_DAY(vD)+1);
       ELSE
         vD := LAST_DAY(vD);
       END IF;
-      WHILE vD < vKoniec LOOP
+      WHILE vD <= vKoniec LOOP
         SELECT kwota into vKwota FROM OKRESY_SKLADKOWE
-        WHERE poczatek <= vd AND koniec >= vd;
+        WHERE poczatek <= vd AND (koniec IS NULL OR koniec >= vd);
         vSuma := vSuma + vKwota;
         vD := LAST_DAY(vD+1);
       END LOOP;
@@ -180,10 +181,21 @@ END;
 
 CREATE OR REPLACE FUNCTION doKiedyUzupelniono
 (
-  id_instr IN INSTRUKTORZY.ID_INSTR%TYPE
+  pID IN INSTRUKTORZY.ID_INSTR%TYPE
 ) RETURNS DATE IS
-  vRes DATE
+  vZaplaconed NUMBER(11,2);
+  vWymaganed NUMBER(11,2);
+  vRes DATE;
 BEGIN
+  SELECT MIN(poczatek) INTO vRes FROM STANY_INSTRUKTOROW
+  WHERE instruktor = pID;
+  vZaplaconed := sumaSkladekInstruktoraWOkresie(pID, '01-01-2000', TO_CHAR(CURRENT_DATE, 'dd-mm-yyyy'));
+
+  LOOP
+    vWymaganed := naleznoscInstruktoraDo(pID, LAST_DAY(vRes+1));
+    EXIT WHEN vWymaganed > vZaplaconed;
+    vRes = LAST_DAY(vRes+1);
+  END LOOP;
 
   return vRes;
 END;
