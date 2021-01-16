@@ -1,4 +1,0 @@
-GNIAZDO;Jan Frankowski;
-TEST;Alan Kowalski;
-Topor;;
-asdas;Jan Frankowski;
