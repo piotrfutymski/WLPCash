@@ -32,7 +32,8 @@ void WplataForm::reload()
     _dataDInput->SetValue(_dataD);
     _dataMInput->SetValue(_dataM);
     _dataRInput->SetValue(_dataR);
-    _instruktorInput->SetSelection(_instruktorInput->FindString(_instruktor));
+    if(_instruktorInput->FindString(_instruktor) != wxNOT_FOUND)
+        _instruktorInput->SetSelection(_instruktorInput->FindString(_instruktor));
 
 }
 
