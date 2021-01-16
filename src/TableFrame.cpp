@@ -80,6 +80,7 @@ void TableFrame::fillData(const std::vector<std::vector<std::string>> & data)
 void TableFrame::reload()
 {
     setPage(0);
+
 }
 
 
@@ -205,6 +206,38 @@ void TableFrame::setPage(int p)
         }
         
     }
+
+    for (int i = 0; i < 10; i++)
+    {
+        if(_deleteButton[i] != nullptr)
+            _deleteButton[i] ->Show();
+        if(_modifyButton[i] != nullptr)
+            _modifyButton[i] ->Show();
+        if(_specialButton[i] != nullptr)
+            _specialButton[i] ->Show();
+    }
+    
+
+
+    for (int i = 0; i < 10; i++)
+    {
+        if(_data.size() <= _page*10 + i)
+        {
+            if(_style == TableStyle::OnlyLast || _style == TableStyle::None || _style == TableStyle::Special)
+            _deleteButton[i]->Hide();
+            if(_style == TableStyle::None || _style == TableStyle::Special)
+            _modifyButton[i]->Hide();
+            if(_style == TableStyle::Special)
+            _specialButton[i]->Hide();
+
+
+        }
+        if(_style == TableStyle::OnlyLast && _data.size() - 1 != _page*10 + i)
+        {
+            _deleteButton[i]->Hide();
+        }
+    }
+
 }
 
 
