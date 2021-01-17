@@ -49,7 +49,7 @@ CREATE TABLE DRUZYNY
 (
 	nazwa VARCHAR2(64),
 	numer NUMBER(6),
-	probna VARCHAR NOT NULL,
+	probna VARCHAR2(3) NOT NULL,
 	patron VARCHAR2(64),
 	druzynowy NUMBER(6) NOT NULL CONSTRAINT FK_DR_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr),
 	hufiec VARCHAR2(64) NOT NULL CONSTRAINT FK_DR_HUFCE REFERENCES HUFCE(nazwa),
@@ -83,6 +83,15 @@ CREATE TABLE WPLATY
   data DATE NOT NULL,
   instruktor NUMBER(6) NOT NULL CONSTRAINT FK_WPL_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr) ON DELETE CASCADE
 );
+
+--#################### SEKWENCJE ####################
+
+DROP SEQUENCE wplaty_id_seq;
+DROP SEQUENCE instruktorzy_id_seq;
+
+CREATE SEQUENCE wplaty_id_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE instruktorzy_id_seq START WITH 1 INCREMENT BY 1;
+
 --#################### TRIGGERY ####################
 CREATE OR REPLACE TRIGGER HUFCE_UPD
 BEFORE UPDATE OF nazwa ON HUFCE
@@ -101,13 +110,6 @@ BEGIN
   SET hufiec = :NEW.nazwa
   WHERE hufiec = :OLD.nazwa;
 END;
---#################### SEKWENCJE ####################
-
-DROP SEQUENCE wplaty_id_seq;
-DROP SEQUENCE instruktorzy_id_seq;
-
-CREATE SEQUENCE wplaty_id_seq START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE instruktorzy_id_seq START WITH 1 INCREMENT BY 1;
 
 --#################### FUNKCJE ####################
 
