@@ -448,7 +448,25 @@ CREATE OR REPLACE PROCEDURE modyfikujInstruktora
   pStHarc IN VARCHAR,
   pHufiec IN VARCHAR
 ) IS
+  vID INSTRUKTORZY.id_instr%TYPE;
+  vStaryHufiec INSTRUKTORZY.hufiec%TYPE;
 BEGIN
+SELECT id_instr, coalesce(hufiec, '') INTO vID, vStaryHufiec FROM instruktorzy WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+IF vStaryHufiec != pHufiec THEN
+  UPDATE HUFCOWI
+  SET hufcowy = hufcowy
+  WHERE hufcowy = vID;
+  IF SQL%FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+  UPDATE Druzyny
+  SET druzynowy = druzynowy
+  WHERE druzynowy = vID;
+  IF SQL%FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+END IF;
+
 IF pHufiec = '' THEN
   UPDATE INSTRUKTORZY
   SET imie = pImie,
@@ -458,7 +476,7 @@ IF pHufiec = '' THEN
   st_instr = pStInstr,
   st_harc = pStHarc,
   hufiec = NULL
-  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+  WHERE id_instr = vID;
 ELSE
 UPDATE INSTRUKTORZY
   SET imie = pImie,
@@ -468,11 +486,11 @@ UPDATE INSTRUKTORZY
   st_instr = pStInstr,
   st_harc = pStHarc,
   hufiec = pHufiec
-  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+  WHERE id_instr = vID;
 END IF;
-  IF SQL%NOTFOUND THEN
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
-  END IF;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajDruzyne
@@ -485,14 +503,20 @@ CREATE OR REPLACE PROCEDURE dodajDruzyne
   pHufiec IN VARCHAR,
   pTyp IN VARCHAR
 )IS
+vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
+  vID :=IMIENAZWISKODOID(pImieNazwisko);
   IF pPatron = '' THEN
     INSERT INTO Druzyny(nazwa, numer, probna, druzynowy, hufiec, typ_druzyny)
-    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, vID, pHufiec, pTyp);
   ELSE
     INSERT INTO Druzyny(nazwa, numer, probna, patron, druzynowy, hufiec, typ_druzyny)
-    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, pPatron, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, pPatron, vID, pHufiec, pTyp);
   END IF;
+
+  UPDATE INSTRUKTORZY
+  SET hufiec = pHufiec
+  WHERE id_instr=vID;
 END;
 
 CREATE OR REPLACE PROCEDURE usunDruzyne
@@ -521,14 +545,16 @@ CREATE OR REPLACE PROCEDURE modyfikujDruzyne
   pHufiec IN VARCHAR,
   pTyp IN VARCHAR
 )IS
+vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
+  vID := IMIENAZWISKODOID(pImieNazwisko);
   IF pPatron = '' THEN
     UPDATE DRUZYNY
     SET nazwa = pNazwa,
     numer = TO_NUMBER(pNumer),
     probna = pProbna,
     patron = NULL,
-    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    druzynowy = vID,
     hufiec = pHufiec,
     typ_druzyny = pTyp
     WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
@@ -538,7 +564,7 @@ BEGIN
     numer = TO_NUMBER(pNumer),
     probna = pProbna,
     patron = pPatron,
-    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    druzynowy = vID,
     hufiec = pHufiec,
     typ_druzyny = pTyp
     WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
@@ -546,6 +572,9 @@ BEGIN
   IF SQL%NOTFOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
   END IF;
+  UPDATE INSTRUKTORZY
+  SET hufiec = pHufiec
+  WHERE id_instr=vID;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajOkresSladkowy
