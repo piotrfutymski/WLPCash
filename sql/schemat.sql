@@ -430,7 +430,7 @@ CREATE OR REPLACE PROCEDURE modyfikujInstruktora
   pRozkaz IN VARCHAR,
   pStInstr IN VARCHAR,
   pStHarc IN VARCHAR,
-  pHufiec IN VARCHAR,
+  pHufiec IN VARCHAR
 ) IS
 BEGIN
 IF pHufiec = '' THEN
@@ -453,7 +453,7 @@ UPDATE INSTRUKTORZY
   st_harc = pStHarc,
   hufiec = pHufiec
   WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
-
+END IF;
   IF SQL%NOTFOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
   END IF;
