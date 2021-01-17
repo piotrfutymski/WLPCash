@@ -337,10 +337,6 @@ BEGIN
   SET nazwa = pNowaNazwa
   WHERE nazwa = pStaraNazwa;
 
-  IF SQL%NOTFOUND THEN
-    raise_application_error(-20001, 'NO OPERATION');
-  END IF;
-
   INSERT INTO hufcowi(hufiec, hufcowy)
   VALUES(pNowaNazwa, vID);
 END;
@@ -530,6 +526,32 @@ BEGIN
   IF SQL%NOTFOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
   END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE dodajOkresSladkowy
+(
+  pKwota IN VARCHAR,
+  pData IN VARCHAR
+) IS
+  vData DATE;
+BEGIN
+  vData := to_date(pData,'DD-MM-YYYY');
+  UPDATE OKRESY_SKLADKOWE
+  SET koniec = vData - EXTRACT(DAY FROM vData)
+  WHERE koniec IS NULL;
+  
+  INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec)
+  VALUES(vData - EXTRACT(DAY FROM vData) + 1, TO_NUMBER(pKwota), NULL);
+END;
+
+CREATE OR REPLACE PROCEDURE usunOkresSladkowy IS
+  vData DATE;
+BEGIN
+  SELECT poczatek INTO vData FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
+
+  DELETE FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
+
+  UPDATE OKRESY_SKLADKOWE SET koniec = NULL WHERE koniec = vData - EXTRACT(DAY FROM vData);
 END;
 --gdfgfdgdf
 

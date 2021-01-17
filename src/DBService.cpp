@@ -851,7 +851,7 @@ bool DBService::deleteOkres(const std::wstring & dataPocz)
 {
     try
     {   
-        *sql<<"BEGIN usunOkresSladkowy(?); END;", soci::use(DateConverter::to_string(L"01-"+dataPocz));
+        *sql<<"BEGIN usunOkresSladkowy(); END;";
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
