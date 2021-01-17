@@ -315,6 +315,9 @@ create or replace PROCEDURE usunHufiec
 BEGIN
   DELETE FROM HUFCE
 	WHERE nazwa = pHufiec;
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
 END;
 
 create or replace PROCEDURE modyfikujHufiec
@@ -333,6 +336,10 @@ BEGIN
   UPDATE HUFCE
   SET nazwa = pNowaNazwa
   WHERE nazwa = pStaraNazwa;
+
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
 
   INSERT INTO hufcowi(hufiec, hufcowy)
   VALUES(pNowaNazwa, vID);
@@ -367,7 +374,7 @@ BEGIN
   WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND poczatek = to_date(pData, 'dd-mm-yyyy') AND koniec IS NULL;
 
   IF SQL%NOTFOUND THEN
-    raise_application_error(-20001, 'NOT CURRENT STAN'); --TODO
+    raise_application_error(-20001, 'NO OPERATION');
   END IF;
 
   UPDATE STANY_INSTRUKTOROW
@@ -397,6 +404,60 @@ BEGIN
     VALUES (vID, pImie, pNazwisko, pEmail, pRozkaz, pStInstr, pStHarc);
   END IF;
   DodajStan('CZYNNY', pImie || ' ' || pNazwisko, pData);
+END;
+
+CREATE OR REPLACE PROCEDURE usunInstruktora
+(
+  pImie IN VARCHAR,
+  pNazwisko IN VARCHAR
+) IS
+BEGIN
+  DELETE FROM INSTRUKTORZY
+  WHERE imie = pImie AND nazwisko = pNazwisko;
+
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE modyfikujInstruktora
+(
+  pStareImie IN VARCHAR,
+  pStareNazwisko IN VARCHAR,
+  pImie IN VARCHAR,
+  pNazwisko IN VARCHAR,
+  pEmail IN VARCHAR,
+  pRozkaz IN VARCHAR,
+  pStInstr IN VARCHAR,
+  pStHarc IN VARCHAR,
+  pHufiec IN VARCHAR,
+) IS
+BEGIN
+IF pHufiec = '' THEN
+  UPDATE INSTRUKTORZY
+  SET imie = pImie,
+  nazwisko = pNazwisko,
+  email = pEmail,
+  rozkaz_przyjecia = pRozkaz,
+  st_instr = pStInstr,
+  st_harc = pStHarc,
+  hufiec = NULL
+  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+ELSE
+UPDATE INSTRUKTORZY
+  SET imie = pImie,
+  nazwisko = pNazwisko,
+  email = pEmail,
+  rozkaz_przyjecia = pRozkaz,
+  st_instr = pStInstr,
+  st_harc = pStHarc,
+  hufiec = pHufiec
+  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+
 END;
 
 --gdfgfdgdf
