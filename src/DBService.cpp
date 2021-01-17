@@ -117,7 +117,7 @@ std::vector<std::vector<std::string>> DBService::getTableData(const std::string 
         st_harcerskis.resize(count);
         hufce_s.resize(count);
 
-        *sql<<"select id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, hufiec from instruktorzy order by nazwisko;", 
+        *sql<<"select id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, coalesce(hufiec, 'brak') from instruktorzy order by nazwisko;", 
         soci::into(ids), soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(rozkaz_s), 
         soci::into(st_instrs), soci::into(st_harcerskis), soci::into(hufce_s);
 
@@ -218,7 +218,7 @@ std::vector<std::vector<std::string>> DBService::getStanyInstruktora(const std::
         poczatek.resize(count);
         koniec.resize(count);
 
-        *sql<<"select to_char(poczatek, 'MM-YYYY'), COALESCE(to_char(koniec, 'DD-MM-YYYY') , 'brak'), status from stany_instruktorow where instruktor \
+        *sql<<"select to_char(poczatek, 'DD-MM-YYYY'), COALESCE(to_char(koniec, 'DD-MM-YYYY') , 'brak'), status from stany_instruktorow where instruktor \
         = (select id_instr from instruktorzy where (imie || ' ' || nazwisko) = ?) order by poczatek;", 
         soci::use(instruktor), soci::into(poczatek), soci::into(koniec), soci::into(status);
 
@@ -762,7 +762,7 @@ bool DBService::insertStatus(const std::vector<std::string> & status)
     {   
         if(status.size() != 5)
             return false;
-        *sql<<"BEGIN dodajStatus(?,?,?); END;",
+        *sql<<"BEGIN dodajStan(?,?,?); END;",
         soci::use(status[0]) ,soci::use(status[1]),soci::use(DateConverter::glue(status[2],status[3],status[4]));
         *sql<<"BEGIN commit; END;";
     }
@@ -778,7 +778,7 @@ bool DBService::deleteStatus(const std::string & dataPocz, const std::string & i
 {
     try
     {   
-        *sql<<"BEGIN usunStatus(?,?); END;", soci::use(dataPocz),soci::use(instruktor);
+        *sql<<"BEGIN usunStan(?,?); END;", soci::use(dataPocz),soci::use(instruktor);
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)

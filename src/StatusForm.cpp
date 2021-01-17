@@ -47,15 +47,16 @@ void StatusForm::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
-    data.push_back(std::string(_dataDInput->GetValue()));
-    data.push_back(std::string(_dataMInput->GetValue()));
-    data.push_back(std::string(_dataRInput->GetValue()));
+    std::vector<std::string> data; 
 
     if(_statusInput->GetSelection() != wxNOT_FOUND )
         data.push_back(std::string(_statusInput->GetString(_statusInput->GetSelection())));
     
     data.push_back(_instruktor);
+
+    data.push_back(std::string(_dataDInput->GetValue()));
+    data.push_back(std::string(_dataMInput->GetValue()));
+    data.push_back(std::string(_dataRInput->GetValue()));
 
     res = _db->insertStatus(data);
 

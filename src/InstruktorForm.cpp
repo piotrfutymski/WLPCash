@@ -127,6 +127,9 @@ void InstruktorForm::onOK(wxCommandEvent & event)
     
     if(_hufiecInput->GetSelection() != wxNOT_FOUND )
         data.push_back(std::string(_hufiecInput->GetString(_hufiecInput->GetSelection())));
+    else
+        data.push_back(std::string(""));
+    
 
     if(_modify)
     {
