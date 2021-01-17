@@ -289,8 +289,8 @@ END;
 
 create or replace PROCEDURE DodajHufiec
 (
-  pImieNazwisko IN VARCHAR,
-  pHufiec IN VARCHAR
+  pHufiec IN VARCHAR,
+  pImieNazwisko IN VARCHAR
 ) IS
 vID NUMBER;
 BEGIN
@@ -321,11 +321,11 @@ create or replace PROCEDURE modyfikujHufiec
 (
   pStaraNazwa IN VARCHAR,
   pNowaNazwa IN VARCHAR,
-  pID IN VARCHAR
+  pImieNazwisko IN VARCHAR
 )IS
   vID NUMBER;
 BEGIN
-  vID := TO_NUMBER(pID);
+  vID := IMIENAZWISKODOID(pImieNazwisko);
 
   DELETE FROM hufcowi
   WHERE hufiec = pStaraNazwa;
@@ -351,6 +351,28 @@ BEGIN
 
   INSERT INTO STANY_INSTRUKTOROW(poczatek, status, instruktor)
   VALUES(to_date(pData, 'dd-mm-yyyy'), pStatus, IMIENAZWISKODOID(pImieNazw));
+END;
+
+CREATE OR REPLACE PROCEDURE UsunStan
+(
+  pData IN VARCHAR,
+  pImieNazw IN VARCHAR
+) IS
+  vNowyPocz DATE;
+BEGIN
+  SELECT poczatek INTO vNowyPocz FROM STANY_INSTRUKTOROW
+  WHERE koniec = to_date(pData, 'dd-mm-yyyy') AND instruktor = IMIENAZWISKODOID(pImieNazw);
+
+  DELETE FROM STANY_INSTRUKTOROW
+  WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND poczatek = to_date(pData, 'dd-mm-yyyy') AND koniec IS NULL;
+
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NOT CURRENT STAN'); --TODO
+  END IF;
+
+  UPDATE STANY_INSTRUKTOROW
+  SET koniec = NULL
+  WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND poczatek = vNowyPocz;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajInstruktora
