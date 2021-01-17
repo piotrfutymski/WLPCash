@@ -32,14 +32,14 @@ CREATE TABLE INSTRUKTORZY
 	rozkaz_przyjecia VARCHAR2(64) NOT NULL,
 	st_instr VARCHAR2(64) NOT NULL CONSTRAINT FK_INSTRUKTORZY_ST_INSTR REFERENCES STOPNIE_INSTRUKTORSKIE(nazwa),
 	st_harc VARCHAR2(64) NOT NULL CONSTRAINT FK_INSTRUKTORZY_ST_HARC REFERENCES STOPNIE_HARCERSKIE(nazwa),
-	hufiec VARCHAR2(64) CONSTRAINT FK_INSTR_HUFCE REFERENCES HUFCE(nazwa)
+	hufiec VARCHAR2(64) CONSTRAINT FK_INSTR_HUFCE REFERENCES HUFCE(nazwa) ON DELETE SET NULL
 );
 CREATE TABLE HUFCOWI
 (
-	hufiec VARCHAR2(64) CONSTRAINT FK_HUFC_HUFCE REFERENCES HUFCE(nazwa),
-	hufcowy NUMBER(6) NOT NULL CONSTRAINT FK_HUFC_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr),
+	hufiec VARCHAR2(64) CONSTRAINT FK_HUFC_HUFCE REFERENCES HUFCE(nazwa) ON DELETE CASCADE,
+	hufcowy NUMBER(6) NOT NULL CONSTRAINT FK_HUFC_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr) ON DELETE CASCADE,
 	CONSTRAINT PK_HUFCOWI PRIMARY KEY(hufiec),
-    CONSTRAINT U_HUFCOWI UNIQUE(HUFCOWY)
+  CONSTRAINT U_HUFCOWI UNIQUE(HUFCOWY)
 );
 CREATE TABLE TYPY_DRUZYN
 (
@@ -67,7 +67,7 @@ CREATE TABLE STANY_INSTRUKTOROW
   poczatek DATE, 
   koniec DATE,
   status VARCHAR2(64) NOT NULL CONSTRAINT FK_ST_STATUS REFERENCES STATUSY(nazwa),
-  instruktor NUMBER(6) CONSTRAINT FK_ST_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr),
+  instruktor NUMBER(6) CONSTRAINT FK_ST_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr) ON DELETE CASCADE,
   CONSTRAINT PK_STANY_INSTRUKTOROW PRIMARY KEY(poczatek, instruktor)
 );
 CREATE TABLE OKRESY_SKLADKOWE
@@ -81,8 +81,26 @@ CREATE TABLE WPLATY
   id_wplaty NUMBER(6) CONSTRAINT PK_WPLATY PRIMARY KEY,
   kwota NUMBER(8,2) NOT NULL, 
   data DATE NOT NULL,
-  instruktor NUMBER(6) NOT NULL CONSTRAINT FK_WPL_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr)
+  instruktor NUMBER(6) NOT NULL CONSTRAINT FK_WPL_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr) ON DELETE CASCADE
 );
+--#################### TRIGGERY ####################
+CREATE OR REPLACE TRIGGER HUFCE_UPD
+BEFORE UPDATE OF nazwa ON HUFCE
+ FOR EACH ROW
+ WHEN (NEW.nazwa IS NOT NULL AND OLD.nazwa <> NEW.nazwa)
+BEGIN
+  UPDATE INSTRUKTORZY
+  SET hufiec = :NEW.nazwa
+  WHERE hufiec = :OLD.nazwa;
+
+  UPDATE HUFCOWI
+  SET hufiec = :NEW.nazwa
+  WHERE hufiec = :OLD.nazwa;
+
+  UPDATE druzyny
+  SET hufiec = :NEW.nazwa
+  WHERE hufiec = :OLD.nazwa;
+END;
 --#################### SEKWENCJE ####################
 
 DROP SEQUENCE wplaty_id_seq;
@@ -230,64 +248,133 @@ END;
 
 create or replace PROCEDURE ResetBazy IS
 BEGIN
-    DELETE FROM WPLATY;
-    DELETE FROM OKRESY_SKLADKOWE;
-    DELETE FROM STANY_INSTRUKTOROW;
-    DELETE FROM STATUSY;
-    DELETE FROM DRUZYNY;
-    DELETE FROM TYPY_DRUZYN;
-    DELETE FROM HUFCOWI;
-    DELETE FROM INSTRUKTORZY;
-    DELETE FROM HUFCE;
-    DELETE FROM STOPNIE_INSTRUKTORSKIE;
-    DELETE FROM STOPNIE_HARCERSKIE;
-    
-    INSERT INTO typy_druzyn(nazwa) VALUES('ZUCHOWA');
-    INSERT INTO typy_druzyn(nazwa) VALUES('HARCERSKA');
-    INSERT INTO typy_druzyn(nazwa) VALUES('WEDROWNICZA');
-    
-    INSERT INTO statusy(nazwa) VALUES('CZYNNY');
-    INSERT INTO statusy(nazwa) VALUES('REZERWA');
-    INSERT INTO statusy(nazwa) VALUES('URLOP');
-    INSERT INTO statusy(nazwa) VALUES('SKRESLONY');
-    
-    INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('PWD');
-    INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('PHM');
-    INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('HM');
-    
-    INSERT INTO STOPNIE_HARCERSKIE(nazwa) VALUES('HO');
-    INSERT INTO STOPNIE_HARCERSKIE(nazwa) VALUES('HR');
-    
-    INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
+  DELETE FROM WPLATY;
+  DELETE FROM OKRESY_SKLADKOWE;
+  DELETE FROM STANY_INSTRUKTOROW;
+  DELETE FROM STATUSY;
+  DELETE FROM DRUZYNY;
+  DELETE FROM TYPY_DRUZYN;
+  DELETE FROM HUFCOWI;
+  DELETE FROM INSTRUKTORZY;
+  DELETE FROM HUFCE;
+  DELETE FROM STOPNIE_INSTRUKTORSKIE;
+  DELETE FROM STOPNIE_HARCERSKIE;
+  
+  INSERT INTO typy_druzyn(nazwa) VALUES('ZUCHOWA');
+  INSERT INTO typy_druzyn(nazwa) VALUES('HARCERSKA');
+  INSERT INTO typy_druzyn(nazwa) VALUES('WEDROWNICZA');
+  
+  INSERT INTO statusy(nazwa) VALUES('CZYNNY');
+  INSERT INTO statusy(nazwa) VALUES('REZERWA');
+  INSERT INTO statusy(nazwa) VALUES('URLOP');
+  INSERT INTO statusy(nazwa) VALUES('SKRESLONY');
+  
+  INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('PWD');
+  INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('PHM');
+  INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa) VALUES('HM');
+  
+  INSERT INTO STOPNIE_HARCERSKIE(nazwa) VALUES('HO');
+  INSERT INTO STOPNIE_HARCERSKIE(nazwa) VALUES('HR');
+  
+  INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
 END;
 
 create or replace PROCEDURE ResetWplat IS
 BEGIN
-    DELETE FROM WPLATY;
-    DELETE FROM OKRESY_SKLADKOWE;
-    
-    INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
+  DELETE FROM WPLATY;
+  DELETE FROM OKRESY_SKLADKOWE;
+  
+  INSERT INTO OKRESY_SKLADKOWE(poczatek, kwota, koniec) VALUES(TO_DATE('01-01-2000', 'dd-mm-yyyy'), 0, NULL);
 END;
 
 create or replace PROCEDURE DodajHufiec
 (
-    pImieNazwisko IN instruktorzy.imie%TYPE,
-    pHufiec IN hufce.nazwa%TYPE
+  pImieNazwisko IN VARCHAR,
+  pHufiec IN VARCHAR
 ) IS
-vID instruktorzy.id_instr%TYPE;
+vID NUMBER;
 BEGIN
-    vID := IMIENAZWISKODOID(pImieNazwisko);
-    INSERT INTO HUFCE(nazwa)
-	  VALUES (pHufiec);
+  vID := IMIENAZWISKODOID(pImieNazwisko);
+  INSERT INTO HUFCE(nazwa)
+	VALUES (pHufiec);
 
-    UPDATE INSTRUKTORZY
-    SET hufiec = pHufiec
-    WHERE id_instr=vID;
+  UPDATE INSTRUKTORZY
+  SET hufiec = pHufiec
+  WHERE id_instr=vID;
 
-    DELETE FROM hufcowi
-    WHERE hufiec = pHufiec;
-    INSERT INTO hufcowi(hufiec, hufcowy)
-    VALUES(pHufiec, vID);
+  DELETE FROM hufcowi
+  WHERE hufiec = pHufiec;
+  INSERT INTO hufcowi(hufiec, hufcowy)
+  VALUES(pHufiec, vID);
+END;
+
+create or replace PROCEDURE usunHufiec
+(
+  pHufiec IN VARCHAR
+) IS
+BEGIN
+  DELETE FROM HUFCE
+	WHERE nazwa = pHufiec;
+END;
+
+create or replace PROCEDURE modyfikujHufiec
+(
+  pStaraNazwa IN VARCHAR,
+  pNowaNazwa IN VARCHAR,
+  pID IN VARCHAR
+)IS
+  vID NUMBER;
+BEGIN
+  vID := TO_NUMBER(pID);
+
+  DELETE FROM hufcowi
+  WHERE hufiec = pStaraNazwa;
+
+  UPDATE HUFCE
+  SET nazwa = pNowaNazwa
+  WHERE nazwa = pStaraNazwa;
+
+  INSERT INTO hufcowi(hufiec, hufcowy)
+  VALUES(pNowaNazwa, vID);
+END;
+
+CREATE OR REPLACE PROCEDURE DodajStan
+(
+  pStatus IN VARCHAR,
+  pImieNazw IN VARCHAR,
+  pData IN VARCHAR
+) IS
+BEGIN
+  UPDATE STANY_INSTRUKTOROW
+  SET koniec = to_date(pData, 'dd-mm-yyyy')
+  WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND koniec IS NULL;
+
+  INSERT INTO STANY_INSTRUKTOROW(poczatek, status, instruktor)
+  VALUES(to_date(pData, 'dd-mm-yyyy'), pStatus, IMIENAZWISKODOID(pImieNazw));
+END;
+
+CREATE OR REPLACE PROCEDURE dodajInstruktora
+(
+  pImie IN VARCHAR,
+  pNazwisko IN VARCHAR,
+  pEmail IN VARCHAR,
+  pRozkaz IN VARCHAR,
+  pStInstr IN VARCHAR,
+  pStHarc IN VARCHAR,
+  pHufiec IN VARCHAR,
+  pData IN VARCHAR
+) IS
+  vID INSTRUKTORZY.ID_INSTR%TYPE;
+BEGIN
+  vID := instruktorzy_id_seq.nextval;
+  IF pHufiec = '' THEN
+    INSERT INTO INSTRUKTORZY(id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, hufiec)
+    VALUES (vID, pImie, pNazwisko, pEmail, pRozkaz, pStInstr, pStHarc, pHufiec);
+  ELSE
+    INSERT INTO INSTRUKTORZY(id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc)
+    VALUES (vID, pImie, pNazwisko, pEmail, pRozkaz, pStInstr, pStHarc);
+  END IF;
+  DodajStan('CZYNNY', pImie || ' ' || pNazwisko, pData);
 END;
 
 --gdfgfdgdf
