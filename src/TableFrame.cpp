@@ -1,7 +1,7 @@
 #include "TableFrame.h"
 
 
-TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, const TableStyle & style)
+TableFrame::TableFrame(const std::wstring & name, int len, int ID, const std::vector<std::pair<std::wstring, int>> & labelData, const TableStyle & style)
     : PopUpFrame(NULL, ID, name, wxDefaultPosition, wxSize(310+len, 510+40), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)), _labelData(labelData), _style(style)
 {
     _panel = std::make_unique<wxPanel>(this, -1);
@@ -72,7 +72,7 @@ TableFrame::TableFrame(const std::string & name, int len, int ID, const std::vec
 
 }
 
-void TableFrame::fillData(const std::vector<std::vector<std::string>> & data)
+void TableFrame::fillData(const std::vector<std::vector<std::wstring>> & data)
 {
     _data = data;
 }
@@ -89,27 +89,27 @@ void TableFrame::setOnAdd(const std::function<void()> & f)
     _onAdd = f;
 }
 
-void TableFrame::setOnModify(const std::function<void(const std::vector<std::string> &)> & f)
+void TableFrame::setOnModify(const std::function<void(const std::vector<std::wstring> &)> & f)
 {
     _onModify = f;
 }
 
-void TableFrame::setOnDel(const std::function<void(const std::vector<std::string> &)> & f)
+void TableFrame::setOnDel(const std::function<void(const std::vector<std::wstring> &)> & f)
 {
     _onDelete = f;
 }
 
-void TableFrame::setOnSpec(const std::function<void(const std::vector<std::string> &)> & f)
+void TableFrame::setOnSpec(const std::function<void(const std::vector<std::wstring> &)> & f)
 {
     _onSpecial = f;
 }
 
-void TableFrame::setValue(const std::string & v)
+void TableFrame::setValue(const std::wstring & v)
 {
     _value = v;
 }
 
-std::string TableFrame::getValue()
+std::wstring TableFrame::getValue()
 {
     return _value;
 }

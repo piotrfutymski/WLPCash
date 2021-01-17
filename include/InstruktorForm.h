@@ -9,17 +9,17 @@ public:
 
     virtual void reload();
     
-    void fillStopienInstrData(const std::vector<std::string> & hD);
-    void fillstopienHarcData(const std::vector<std::string> & hD);
-    void fillHufiecData(const std::vector<std::string> & hD);
+    void fillStopienInstrData(const std::vector<std::wstring> & hD);
+    void fillstopienHarcData(const std::vector<std::wstring> & hD);
+    void fillHufiecData(const std::vector<std::wstring> & hD);
 
-    void setImie(const std::string & s);
-    void setNazwisko(const std::string & s);
-    void setEmail(const std::string & s);
-    void setRozkaz(const std::string & s);
-    void setStopienInstr(const std::string & s);
-    void setStopienHarc(const std::string & s);
-    void setHufiec(const std::string & s);
+    void setImie(const std::wstring & s);
+    void setNazwisko(const std::wstring & s);
+    void setEmail(const std::wstring & s);
+    void setRozkaz(const std::wstring & s);
+    void setStopienInstr(const std::wstring & s);
+    void setStopienHarc(const std::wstring & s);
+    void setHufiec(const std::wstring & s);
 
     void setModify(bool m);
     void setOnOK(const std::function<void()> & f);
@@ -54,17 +54,17 @@ private:
 
     //DATA
 
-    std::string _imie;
-    std::string _nazwisko;
-    std::string _email;
-    std::string _rozkaz;
-    std::string _stopienInstr;
-    std::string _stopienHarc;
-    std::string _hufiec;
+    std::wstring _imie;
+    std::wstring _nazwisko;
+    std::wstring _email;
+    std::wstring _rozkaz;
+    std::wstring _stopienInstr;
+    std::wstring _stopienHarc;
+    std::wstring _hufiec;
 
-    std::vector<std::string> _stopienInstrData;
-    std::vector<std::string> _stopienHarcData;
-    std::vector<std::string> _hufiecData;
+    std::vector<std::wstring> _stopienInstrData;
+    std::vector<std::wstring> _stopienHarcData;
+    std::vector<std::wstring> _hufiecData;
     
     //MODE
 

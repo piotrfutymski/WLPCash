@@ -9,14 +9,14 @@ public:
 
     virtual void reload();
 
-    void fillInstruktorData(const std::vector<std::string> & hD);
+    void fillInstruktorData(const std::vector<std::wstring> & hD);
 
-    void setInstruktor(const std::string & s);
-    void setKwota(const std::string & s);
-    void setDataD(const std::string & s);
-    void setDataM(const std::string & s);
-    void setDataR(const std::string & s);
-    void setID(const std::string & s);
+    void setInstruktor(const std::wstring & s);
+    void setKwota(const std::wstring & s);
+    void setDataD(const std::wstring & s);
+    void setDataM(const std::wstring & s);
+    void setDataR(const std::wstring & s);
+    void setID(const std::wstring & s);
 
     void setModify(bool m);
     void setOnOK(const std::function<void()> & f);
@@ -41,15 +41,15 @@ private:
 
     //DATA
 
-    std::string _instruktor;
-    std::string _kwota;
-    std::string _dataD;
-    std::string _dataM;
-    std::string _dataR;
+    std::wstring _instruktor;
+    std::wstring _kwota;
+    std::wstring _dataD;
+    std::wstring _dataM;
+    std::wstring _dataR;
 
-    std::string _id;
+    std::wstring _id;
 
-    std::vector<std::string> _instruktorData;
+    std::vector<std::wstring> _instruktorData;
 
     
     //MODE

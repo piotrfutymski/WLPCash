@@ -26,7 +26,7 @@ void ChooseWplatyFrame::reload()
         _instruktorInput->SetSelection(0);
 }
 
-void ChooseWplatyFrame::fillInstruktorData(const std::vector<std::string> & hD)
+void ChooseWplatyFrame::fillInstruktorData(const std::vector<std::wstring> & hD)
 {
     _instruktorData = hD;
 }
@@ -41,13 +41,13 @@ void ChooseWplatyFrame::setOnConcrete(const std::function<void()> & f)
     _onConcrete = f;
 }
 
-std::string ChooseWplatyFrame::getInstruktor()
+std::wstring ChooseWplatyFrame::getInstruktor()
 {
 
     if(_instruktorInput->GetSelection() == -1)
-        return "";
+        return L"";
     else
-        return std::string(_instruktorInput->GetString(_instruktorInput->GetSelection()));
+        return std::wstring(_instruktorInput->GetString(_instruktorInput->GetSelection()));
 }
 
 

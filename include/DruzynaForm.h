@@ -9,17 +9,17 @@ public:
 
     virtual void reload();
 
-    void fillDruzynowyData(const std::vector<std::string> & hD);
-    void fillHufiecData(const std::vector<std::string> & hD);
-    void fillTypData(const std::vector<std::string> & hD);
+    void fillDruzynowyData(const std::vector<std::wstring> & hD);
+    void fillHufiecData(const std::vector<std::wstring> & hD);
+    void fillTypData(const std::vector<std::wstring> & hD);
 
-    void setNazwa(const std::string & s);
-    void setNumer(const std::string & s);
-    void setProbna(const std::string & s);
-    void setPatron(const std::string & s);
-    void setDruzynowy(const std::string & s);
-    void setHufiec(const std::string & s);
-    void setTyp(const std::string & s);
+    void setNazwa(const std::wstring & s);
+    void setNumer(const std::wstring & s);
+    void setProbna(const std::wstring & s);
+    void setPatron(const std::wstring & s);
+    void setDruzynowy(const std::wstring & s);
+    void setHufiec(const std::wstring & s);
+    void setTyp(const std::wstring & s);
 
 
     void setModify(bool m);
@@ -52,17 +52,17 @@ private:
 
     //DATA
 
-    std::string _nazwa;
-    std::string _numer;
-    std::string _probna;
-    std::string _patron;
-    std::string _druzynowy;
-    std::string _hufiec;
-    std::string _typ;
+    std::wstring _nazwa;
+    std::wstring _numer;
+    std::wstring _probna;
+    std::wstring _patron;
+    std::wstring _druzynowy;
+    std::wstring _hufiec;
+    std::wstring _typ;
 
-    std::vector<std::string> _druzynowyData;
-    std::vector<std::string> _hufiecData;
-    std::vector<std::string> _typData;
+    std::vector<std::wstring> _druzynowyData;
+    std::vector<std::wstring> _hufiecData;
+    std::vector<std::wstring> _typData;
 
     //MODE
 

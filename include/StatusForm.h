@@ -9,9 +9,9 @@ public:
 
     virtual void reload();
 
-    void fillStatusData(const std::vector<std::string> & hD);
+    void fillStatusData(const std::vector<std::wstring> & hD);
 
-    void setInstruktor(const std::string & s);
+    void setInstruktor(const std::wstring & s);
 
     void setOnOK(const std::function<void()> & f);
 
@@ -33,9 +33,9 @@ private:
 
     //DATA
 
-    std::string _instruktor;
+    std::wstring _instruktor;
 
-    std::vector<std::string> _statusData;
+    std::vector<std::wstring> _statusData;
 
     //SERVICE
 

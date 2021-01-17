@@ -8,12 +8,12 @@ public:
 
     virtual void reload();
 
-    void fillInstruktorData(const std::vector<std::string> & hD);
+    void fillInstruktorData(const std::vector<std::wstring> & hD);
 
     void setOnAll(const std::function<void()> & f);
     void setOnConcrete(const std::function<void()> & f);
 
-    std::string getInstruktor();
+    std::wstring getInstruktor();
 
 private:
 
@@ -34,7 +34,7 @@ private:
 
     //DATA
 
-    std::vector<std::string> _instruktorData;
+    std::vector<std::wstring> _instruktorData;
 
 
 private:

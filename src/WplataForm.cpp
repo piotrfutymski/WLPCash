@@ -37,33 +37,33 @@ void WplataForm::reload()
 
 }
 
-void WplataForm::fillInstruktorData(const std::vector<std::string> & hD)
+void WplataForm::fillInstruktorData(const std::vector<std::wstring> & hD)
 {
     _instruktorData = hD;
 }
 
-void WplataForm::setInstruktor(const std::string & s)
+void WplataForm::setInstruktor(const std::wstring & s)
 {
     _instruktor = s;
 }
-void WplataForm::setKwota(const std::string & s)
+void WplataForm::setKwota(const std::wstring & s)
 {
     _kwota = s;
 }
-void WplataForm::setDataD(const std::string & s)
+void WplataForm::setDataD(const std::wstring & s)
 {
     _dataD = s;
 }
-void WplataForm::setDataM(const std::string & s)
+void WplataForm::setDataM(const std::wstring & s)
 {
     _dataM = s;
 }
-void WplataForm::setDataR(const std::string & s)
+void WplataForm::setDataR(const std::wstring & s)
 {
     _dataR = s;
 }
 
-void WplataForm::setID(const std::string & s)
+void WplataForm::setID(const std::wstring & s)
 {
     _id = s;
 }
@@ -82,15 +82,15 @@ void WplataForm::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
+    std::vector<std::wstring> data;
 
     if(_instruktorInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_instruktorInput->GetString(_instruktorInput->GetSelection())));
+        data.push_back(std::wstring(_instruktorInput->GetString(_instruktorInput->GetSelection())));
 
-    data.push_back(std::string(_kwotaInput->GetValue()));
-    data.push_back(std::string(_dataDInput->GetValue()));
-    data.push_back(std::string(_dataMInput->GetValue()));
-    data.push_back(std::string(_dataRInput->GetValue()));
+    data.push_back(std::wstring(_kwotaInput->GetValue()));
+    data.push_back(std::wstring(_dataDInput->GetValue()));
+    data.push_back(std::wstring(_dataMInput->GetValue()));
+    data.push_back(std::wstring(_dataRInput->GetValue()));
 
     if(_modify)
     {

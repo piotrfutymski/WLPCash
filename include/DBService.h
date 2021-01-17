@@ -16,47 +16,47 @@ public:
 
     //SELECT FUNCTIONS (getting data from database)
 
-    std::vector<std::vector<std::string>> getTableData(const std::string & s);
-    std::vector<std::vector<std::string>> getStanyInstruktora(const std::string & instruktor);
-    std::vector<std::vector<std::string>> getWplatyInstruktora(const std::string & instruktor);
+    std::vector<std::vector<std::wstring>> getTableData(const std::wstring & s);
+    std::vector<std::vector<std::wstring>> getStanyInstruktora(const std::wstring & instruktor);
+    std::vector<std::vector<std::wstring>> getWplatyInstruktora(const std::wstring & instruktor);
 
-    std::vector<std::vector<std::string>> getWplatyIndData(const std::vector<std::string> & dat);
-    std::vector<std::vector<std::string>> getWplatyHufData(const std::vector<std::string> & dat);
-    std::vector<std::vector<std::string>> getUzupelnieniaData();
-    std::vector<std::vector<std::string>> getOpoznieniaData(const std::vector<std::string> & dat);
+    std::vector<std::vector<std::wstring>> getWplatyIndData(const std::vector<std::wstring> & dat);
+    std::vector<std::vector<std::wstring>> getWplatyHufData(const std::vector<std::wstring> & dat);
+    std::vector<std::vector<std::wstring>> getUzupelnieniaData();
+    std::vector<std::vector<std::wstring>> getOpoznieniaData(const std::vector<std::wstring> & dat);
 
-    std::vector<std::string> getPossibleHufcowi();
-    std::vector<std::string> getPossibleDruzynowi();
-    std::vector<std::string> getAllInstruktorzy();
-    std::vector<std::string> getPossibleHufce();
-    std::vector<std::string> getPossibleTypyDruzyn();
-    std::vector<std::string> getPossibleStopnieInstr();
-    std::vector<std::string> getPossibleStopnieHarc();
-    std::vector<std::string> getPossibleStatusy();
+    std::vector<std::wstring> getPossibleHufcowi();
+    std::vector<std::wstring> getPossibleDruzynowi();
+    std::vector<std::wstring> getAllInstruktorzy();
+    std::vector<std::wstring> getPossibleHufce();
+    std::vector<std::wstring> getPossibleTypyDruzyn();
+    std::vector<std::wstring> getPossibleStopnieInstr();
+    std::vector<std::wstring> getPossibleStopnieHarc();
+    std::vector<std::wstring> getPossibleStatusy();
 
     //UPDATE FUNCTIONS (changing data in database)
 
-    bool updateHufiec(const std::string & nazwa, const std::vector<std::string> & hufiec);
-    bool insertHufiec(const std::vector<std::string> & hufiec);
-    bool deleteHufiec(const std::string & nazwa);
+    bool updateHufiec(const std::wstring & nazwa, const std::vector<std::wstring> & hufiec);
+    bool insertHufiec(const std::vector<std::wstring> & hufiec);
+    bool deleteHufiec(const std::wstring & nazwa);
 
-    bool updateDruzyna(const std::string & nazwa, const std::string & numer, const std::vector<std::string> & druzyna);
-    bool insertDruzyna(const std::vector<std::string> & druzyna);
-    bool deleteDruzyna(const std::string & nazwa, const std::string & numer);
+    bool updateDruzyna(const std::wstring & nazwa, const std::wstring & numer, const std::vector<std::wstring> & druzyna);
+    bool insertDruzyna(const std::vector<std::wstring> & druzyna);
+    bool deleteDruzyna(const std::wstring & nazwa, const std::wstring & numer);
 
-    bool updateInstruktor(const std::string & imie, const std::string & nazwisko, const std::vector<std::string> & instruktor);
-    bool insertInstruktor(const std::vector<std::string> & instruktor);
-    bool deleteInstruktor(const std::string & imie, const std::string & nazwisko);
+    bool updateInstruktor(const std::wstring & imie, const std::wstring & nazwisko, const std::vector<std::wstring> & instruktor);
+    bool insertInstruktor(const std::vector<std::wstring> & instruktor);
+    bool deleteInstruktor(const std::wstring & imie, const std::wstring & nazwisko);
 
-    bool insertStatus(const std::vector<std::string> & status);
-    bool deleteStatus(const std::string & dataPocz, const std::string & instruktor);
+    bool insertStatus(const std::vector<std::wstring> & status);
+    bool deleteStatus(const std::wstring & dataPocz, const std::wstring & instruktor);
 
-    bool insertOkres(const std::vector<std::string> & okres);
-    bool deleteOkres(const std::string & dataPocz);
+    bool insertOkres(const std::vector<std::wstring> & okres);
+    bool deleteOkres(const std::wstring & dataPocz);
 
-    bool updateWplata(const std::string & id, const std::vector<std::string> & wplata);
-    bool insertWplata(const std::vector<std::string> & wplata);
-    bool deleteWplata(const std::string & id);
+    bool updateWplata(const std::wstring & id, const std::vector<std::wstring> & wplata);
+    bool insertWplata(const std::vector<std::wstring> & wplata);
+    bool deleteWplata(const std::wstring & id);
 
     //
 

@@ -27,12 +27,12 @@ void StatusForm::reload()
 
 }
 
-void StatusForm::fillStatusData(const std::vector<std::string> & hD)
+void StatusForm::fillStatusData(const std::vector<std::wstring> & hD)
 {
     _statusData = hD;
 }
 
-void StatusForm::setInstruktor(const std::string & s)
+void StatusForm::setInstruktor(const std::wstring & s)
 {
     _instruktor = s;
 }
@@ -47,16 +47,16 @@ void StatusForm::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data; 
+    std::vector<std::wstring> data; 
 
     if(_statusInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_statusInput->GetString(_statusInput->GetSelection())));
+        data.push_back(std::wstring(_statusInput->GetString(_statusInput->GetSelection())));
     
     data.push_back(_instruktor);
 
-    data.push_back(std::string(_dataDInput->GetValue()));
-    data.push_back(std::string(_dataMInput->GetValue()));
-    data.push_back(std::string(_dataRInput->GetValue()));
+    data.push_back(std::wstring(_dataDInput->GetValue()));
+    data.push_back(std::wstring(_dataMInput->GetValue()));
+    data.push_back(std::wstring(_dataRInput->GetValue()));
 
     res = _db->insertStatus(data);
 

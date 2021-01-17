@@ -57,44 +57,44 @@ void InstruktorForm::reload()
     _hufiecInput->SetSelection(_hufiecInput->FindString(_hufiec));
 }
 
-void InstruktorForm::fillStopienInstrData(const std::vector<std::string> & hD)
+void InstruktorForm::fillStopienInstrData(const std::vector<std::wstring> & hD)
 {
     _stopienInstrData = hD;
 }
-void InstruktorForm::fillstopienHarcData(const std::vector<std::string> & hD)
+void InstruktorForm::fillstopienHarcData(const std::vector<std::wstring> & hD)
 {
     _stopienHarcData = hD;
 }
-void InstruktorForm::fillHufiecData(const std::vector<std::string> & hD)
+void InstruktorForm::fillHufiecData(const std::vector<std::wstring> & hD)
 {
     _hufiecData= hD;
 }
 
-void InstruktorForm::setImie(const std::string & s)
+void InstruktorForm::setImie(const std::wstring & s)
 {
     _imie = s;
 }
-void InstruktorForm::setNazwisko(const std::string & s)
+void InstruktorForm::setNazwisko(const std::wstring & s)
 {
     _nazwisko = s;
 }
-void InstruktorForm::setEmail(const std::string & s)
+void InstruktorForm::setEmail(const std::wstring & s)
 {
     _email = s;
 }
-void InstruktorForm::setRozkaz(const std::string & s)
+void InstruktorForm::setRozkaz(const std::wstring & s)
 {
     _rozkaz = s;
 }
-void InstruktorForm::setStopienInstr(const std::string & s)
+void InstruktorForm::setStopienInstr(const std::wstring & s)
 {
     _stopienInstr = s;
 }
-void InstruktorForm::setStopienHarc(const std::string & s)
+void InstruktorForm::setStopienHarc(const std::wstring & s)
 {
     _stopienHarc = s;
 }
-void InstruktorForm::setHufiec(const std::string & s)
+void InstruktorForm::setHufiec(const std::wstring & s)
 {
     _hufiec = s;
 }
@@ -113,22 +113,22 @@ void InstruktorForm::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
-    data.push_back(std::string(_imieInput->GetValue()));
-    data.push_back(std::string(_nazwiskoInput->GetValue()));
-    data.push_back(std::string(_emailInput->GetValue()));
-    data.push_back(std::string(_rozkazInput->GetValue()));
+    std::vector<std::wstring> data;
+    data.push_back(std::wstring(_imieInput->GetValue()));
+    data.push_back(std::wstring(_nazwiskoInput->GetValue()));
+    data.push_back(std::wstring(_emailInput->GetValue()));
+    data.push_back(std::wstring(_rozkazInput->GetValue()));
 
     if(_stopienInstrInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_stopienInstrInput->GetString(_stopienInstrInput->GetSelection())));
+        data.push_back(std::wstring(_stopienInstrInput->GetString(_stopienInstrInput->GetSelection())));
     
     if(_stopienHarcInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_stopienHarcInput->GetString(_stopienHarcInput->GetSelection())));
+        data.push_back(std::wstring(_stopienHarcInput->GetString(_stopienHarcInput->GetSelection())));
     
     if(_hufiecInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_hufiecInput->GetString(_hufiecInput->GetSelection())));
+        data.push_back(std::wstring(_hufiecInput->GetString(_hufiecInput->GetSelection())));
     else
-        data.push_back(std::string(""));
+        data.push_back(std::wstring(L""));
     
 
     if(_modify)
@@ -137,9 +137,9 @@ void InstruktorForm::onOK(wxCommandEvent & event)
     }
     else
     {
-        data.push_back(std::string(_dataDInput->GetValue()));
-        data.push_back(std::string(_dataMInput->GetValue()));
-        data.push_back(std::string(_dataRInput->GetValue()));
+        data.push_back(std::wstring(_dataDInput->GetValue()));
+        data.push_back(std::wstring(_dataMInput->GetValue()));
+        data.push_back(std::wstring(_dataRInput->GetValue()));
         res = _db->insertInstruktor(data);
     }
 

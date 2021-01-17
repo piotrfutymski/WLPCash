@@ -29,17 +29,17 @@ void HufiecForm::reload()
 }
 
 
-void HufiecForm::fillHufocowyData(const std::vector<std::string> & hD)
+void HufiecForm::fillHufocowyData(const std::vector<std::wstring> & hD)
 {
     _hufcowyData = hD;
 }
 
-void HufiecForm::setNazwa(const std::string & s)
+void HufiecForm::setNazwa(const std::wstring & s)
 {
     _nazwa = s;
 }
 
-void HufiecForm::setHufcowy(const std::string & s)
+void HufiecForm::setHufcowy(const std::wstring & s)
 {
     _hufcowy = s;
 }
@@ -59,11 +59,11 @@ void HufiecForm::onOK(wxCommandEvent& WXUNUSED(event))
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
-    data.push_back(std::string(_nazwaInput->GetValue()));
+    std::vector<std::wstring> data;
+    data.push_back(std::wstring(_nazwaInput->GetValue()));
 
     if(_hufcowyInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_hufcowyInput->GetString(_hufcowyInput->GetSelection())));
+        data.push_back(std::wstring(_hufcowyInput->GetString(_hufcowyInput->GetSelection())));
 
     if(_modify)
     {

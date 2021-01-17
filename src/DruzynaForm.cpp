@@ -52,43 +52,43 @@ void DruzynaForm::reload()
     _typInput->SetSelection(_typInput->FindString(_typ));
 }
 
-void DruzynaForm::fillDruzynowyData(const std::vector<std::string> & hD)
+void DruzynaForm::fillDruzynowyData(const std::vector<std::wstring> & hD)
 {
     _druzynowyData = hD;
 }
-void DruzynaForm::fillHufiecData(const std::vector<std::string> & hD)
+void DruzynaForm::fillHufiecData(const std::vector<std::wstring> & hD)
 {
     _hufiecData = hD;
 }
-void DruzynaForm::fillTypData(const std::vector<std::string> & hD)
+void DruzynaForm::fillTypData(const std::vector<std::wstring> & hD)
 {
     _typData = hD;
 }
-void DruzynaForm::setNazwa(const std::string & s)
+void DruzynaForm::setNazwa(const std::wstring & s)
 {
     _nazwa = s;
 }
-void DruzynaForm::setNumer(const std::string & s)
+void DruzynaForm::setNumer(const std::wstring & s)
 {
     _numer = s;
 }
-void DruzynaForm::setProbna(const std::string & s)
+void DruzynaForm::setProbna(const std::wstring & s)
 {
     _probna = s;
 }
-void DruzynaForm::setPatron(const std::string & s)
+void DruzynaForm::setPatron(const std::wstring & s)
 {
     _patron = s;
 }
-void DruzynaForm::setDruzynowy(const std::string & s)
+void DruzynaForm::setDruzynowy(const std::wstring & s)
 {
     _druzynowy = s;
 }
-void DruzynaForm::setHufiec(const std::string & s)
+void DruzynaForm::setHufiec(const std::wstring & s)
 {
     _hufiec = s;
 }
-void DruzynaForm::setTyp(const std::string & s)
+void DruzynaForm::setTyp(const std::wstring & s)
 {
     _typ = s;
 }
@@ -107,21 +107,21 @@ void DruzynaForm::onOK(wxCommandEvent & event)
     std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
-    data.push_back(std::string(_nazwaInput->GetValue()));
-    data.push_back(std::string(_numerInput->GetValue()));
+    std::vector<std::wstring> data;
+    data.push_back(std::wstring(_nazwaInput->GetValue()));
+    data.push_back(std::wstring(_numerInput->GetValue()));
 
     if(_probnaInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_probnaInput->GetString(_probnaInput->GetSelection())));
+        data.push_back(std::wstring(_probnaInput->GetString(_probnaInput->GetSelection())));
 
-    data.push_back(std::string(_patronInput->GetValue()));
+    data.push_back(std::wstring(_patronInput->GetValue()));
 
     if(_druzynowyInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_druzynowyInput->GetString(_druzynowyInput->GetSelection())));
+        data.push_back(std::wstring(_druzynowyInput->GetString(_druzynowyInput->GetSelection())));
     if(_hufiecInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_hufiecInput->GetString(_hufiecInput->GetSelection())));
+        data.push_back(std::wstring(_hufiecInput->GetString(_hufiecInput->GetSelection())));
     if(_typInput->GetSelection() != wxNOT_FOUND )
-        data.push_back(std::string(_typInput->GetString(_typInput->GetSelection())));
+        data.push_back(std::wstring(_typInput->GetString(_typInput->GetSelection())));
 
     if(_modify)
     {

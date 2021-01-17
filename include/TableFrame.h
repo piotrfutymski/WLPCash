@@ -13,19 +13,19 @@ public:
         None, Special, OnlyLast, Raport, Raport_Mail
     };
 
-    TableFrame(const std::string & name, int len, int ID, const std::vector<std::pair<std::string, int>> & labelData, const TableStyle & style = TableStyle::None);
+    TableFrame(const std::wstring & name, int len, int ID, const std::vector<std::pair<std::wstring, int>> & labelData, const TableStyle & style = TableStyle::None);
 
-    void fillData(const std::vector<std::vector<std::string>> & data);
+    void fillData(const std::vector<std::vector<std::wstring>> & data);
 
     virtual void reload();
 
     void setOnAdd(const std::function<void()> & f);
-    void setOnModify(const std::function<void(const std::vector<std::string> &)> & f);
-    void setOnDel(const std::function<void(const std::vector<std::string> &)> & f);
-    void setOnSpec(const std::function<void(const std::vector<std::string> &)> & f);
+    void setOnModify(const std::function<void(const std::vector<std::wstring> &)> & f);
+    void setOnDel(const std::function<void(const std::vector<std::wstring> &)> & f);
+    void setOnSpec(const std::function<void(const std::vector<std::wstring> &)> & f);
 
-    void setValue(const std::string & v);
-    std::string getValue();
+    void setValue(const std::wstring & v);
+    std::wstring getValue();
 
 
 private:
@@ -53,11 +53,11 @@ private:
 
     //Data
 
-    std::vector<std::vector<std::string>> _data;
-    std::vector<std::pair<std::string, int>> _labelData;
+    std::vector<std::vector<std::wstring>> _data;
+    std::vector<std::pair<std::wstring, int>> _labelData;
     int _page = 0;
 
-    std::string _value;
+    std::wstring _value;
 
     // style
 
@@ -66,9 +66,9 @@ private:
     // functions
 
     std::function<void()> _onAdd;
-    std::function<void(const std::vector<std::string> &)> _onModify;
-    std::function<void(const std::vector<std::string> &)> _onDelete;
-    std::function<void(const std::vector<std::string> &)> _onSpecial;
+    std::function<void(const std::vector<std::wstring> &)> _onModify;
+    std::function<void(const std::vector<std::wstring> &)> _onDelete;
+    std::function<void(const std::vector<std::wstring> &)> _onSpecial;
 
 private:
 

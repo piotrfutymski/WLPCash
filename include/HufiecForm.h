@@ -10,10 +10,10 @@ public:
 
     virtual void reload();
 
-    void fillHufocowyData(const std::vector<std::string> & hD);
+    void fillHufocowyData(const std::vector<std::wstring> & hD);
 
-    void setNazwa(const std::string & s);
-    void setHufcowy(const std::string & s);
+    void setNazwa(const std::wstring & s);
+    void setHufcowy(const std::wstring & s);
 
     void setModify(bool m);
     void setOnOK(const std::function<void()> & f);
@@ -35,9 +35,9 @@ private:
 
     //DATA
 
-    std::string _nazwa;
-    std::string _hufcowy;
-    std::vector<std::string> _hufcowyData;
+    std::wstring _nazwa;
+    std::wstring _hufcowy;
+    std::vector<std::wstring> _hufcowyData;
 
     //MODE
 

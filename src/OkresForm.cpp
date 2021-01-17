@@ -32,10 +32,10 @@ void OkresForm::onOK(wxCommandEvent & event)
      std::unique_ptr<wxMessageDialog> dial;
     bool res = false;
 
-    std::vector<std::string> data;
-    data.push_back(std::string(_dataMInput->GetValue()));
-    data.push_back(std::string(_dataRInput->GetValue()));
-    data.push_back(std::string(_kwotaInput->GetValue()));
+    std::vector<std::wstring> data;
+    data.push_back(std::wstring(_dataMInput->GetValue()));
+    data.push_back(std::wstring(_dataRInput->GetValue()));
+    data.push_back(std::wstring(_kwotaInput->GetValue()));
 
     res = _db->insertOkres(data);
 

@@ -38,8 +38,8 @@ MainFrame::MainFrame()
 
     //---
 
-    _hufceFrame = std::make_unique<TableFrame>(std::string("Hufce"), 300, wxWindowID(ID::HUFCE)+1000, std::vector<std::pair<std::string,int>>({{"Nazwa",120},{"Hufcowy",180}}));
-    _hufceFrame->setOnModify([&](const std::vector<std::string> & hufiec){
+    _hufceFrame = std::make_unique<TableFrame>(std::wstring(L"Hufce"), 300, wxWindowID(ID::HUFCE)+1000, std::vector<std::pair<std::wstring,int>>({{L"Nazwa",120},{L"Hufcowy",180}}));
+    _hufceFrame->setOnModify([&](const std::vector<std::wstring> & hufiec){
         if(!_hufiecForm->isOpened())
             _hufiecForm->Show();
         _hufiecForm->fillHufocowyData(_db.getPossibleHufcowi());
@@ -49,7 +49,7 @@ MainFrame::MainFrame()
         _hufiecForm->reload();
     });
 
-    _hufceFrame->setOnDel([&](const std::vector<std::string> & hufiec){
+    _hufceFrame->setOnDel([&](const std::vector<std::wstring> & hufiec){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteHufiec(hufiec[0]);
         if(res)
@@ -61,7 +61,7 @@ MainFrame::MainFrame()
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
         }
         dial->ShowModal();
-        openTable("hufce", _hufceFrame);
+        openTable(L"hufce", _hufceFrame);
     });
 
 
@@ -69,21 +69,21 @@ MainFrame::MainFrame()
        if(!_hufiecForm->isOpened())
             _hufiecForm->Show();
         _hufiecForm->fillHufocowyData(_db.getPossibleHufcowi());
-        _hufiecForm->setNazwa("");
+        _hufiecForm->setNazwa(L"");
         _hufiecForm->setModify(false);
         _hufiecForm->reload();
     });
 
     _hufiecForm = std::make_unique<HufiecForm>(wxWindowID(ID::HUFCE)+2000, &_db);
     _hufiecForm->setOnOK([&](){
-        openTable("hufce", _hufceFrame);
+        openTable(L"hufce", _hufceFrame);
     });
 
     //---
 
-    _druzynyFrame = std::make_unique<TableFrame>(std::string("Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
-    std::vector<std::pair<std::string, int>>({{"Nazwa", 100},{"Numer",70},{"Czy probna",80},{"Patron",200},{"Druzynowy",180},{"Hufiec",100},{"Typ",100}}));
-    _druzynyFrame->setOnModify([&](const std::vector<std::string> & druzyna){
+    _druzynyFrame = std::make_unique<TableFrame>(std::wstring(L"Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
+    std::vector<std::pair<std::wstring, int>>({{L"Nazwa", 100},{L"Numer",70},{L"Czy próbna",80},{L"Patron",200},{L"Drużynowy",180},{L"Hufiec",100},{L"Typ",100}}));
+    _druzynyFrame->setOnModify([&](const std::vector<std::wstring> & druzyna){
         if(!_druzynaForm->isOpened())
             _druzynaForm->Show();
         _druzynaForm->fillDruzynowyData(_db.getPossibleDruzynowi());
@@ -101,7 +101,7 @@ MainFrame::MainFrame()
         _druzynaForm->reload();
     });
 
-    _druzynyFrame->setOnDel([&](const std::vector<std::string> & druzyna){
+    _druzynyFrame->setOnDel([&](const std::vector<std::wstring> & druzyna){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteDruzyna(druzyna[0], druzyna[1]);
         if(res)
@@ -113,7 +113,7 @@ MainFrame::MainFrame()
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
         }
         dial->ShowModal();
-        openTable("druzyny", _druzynyFrame);
+        openTable(L"druzyny", _druzynyFrame);
     });
 
     _druzynyFrame->setOnAdd([&](){
@@ -122,9 +122,9 @@ MainFrame::MainFrame()
         _druzynaForm->fillDruzynowyData(_db.getPossibleDruzynowi());
         _druzynaForm->fillHufiecData(_db.getPossibleHufce());
         _druzynaForm->fillTypData(_db.getPossibleTypyDruzyn());
-        _druzynaForm->setNazwa("");
-        _druzynaForm->setNumer("");
-        _druzynaForm->setPatron("");
+        _druzynaForm->setNazwa(L"");
+        _druzynaForm->setNumer(L"");
+        _druzynaForm->setPatron(L"");
 
         _druzynaForm->setModify(false);
         _druzynaForm->reload();
@@ -132,15 +132,15 @@ MainFrame::MainFrame()
 
     _druzynaForm = std::make_unique<DruzynaForm>(wxWindowID(ID::DRUZYNY)+2000, &_db);
     _druzynaForm->setOnOK([&](){
-        openTable("druzyny", _druzynyFrame);
+        openTable(L"druzyny", _druzynyFrame);
     });
 
     //---
 
-    _instruktorzyFrame = std::make_unique<TableFrame>(std::string("Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
-    std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"E-mail",200},{"Rozkaz",100},{"St. instr.",100},{"St. harcerski",100},{"Hufiec",100}}), TableFrame::TableStyle::Special);
+    _instruktorzyFrame = std::make_unique<TableFrame>(std::wstring(L"Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
+    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imię",100},{L"Nazwisko",100},{L"E-mail",200},{L"Rozkaz",100},{L"St. instr.",100},{L"St. harcerski",100},{L"Hufiec",100}}), TableFrame::TableStyle::Special);
     
-    _instruktorzyFrame->setOnModify([&](const std::vector<std::string> & instruktor){
+    _instruktorzyFrame->setOnModify([&](const std::vector<std::wstring> & instruktor){
         if(!_instruktorForm->isOpened())
             _instruktorForm->Show();
         _instruktorForm->fillStopienInstrData(_db.getPossibleStopnieInstr());
@@ -159,7 +159,7 @@ MainFrame::MainFrame()
         _instruktorForm->reload();
     });
 
-    _instruktorzyFrame->setOnDel([&](const std::vector<std::string> & instruktor){
+    _instruktorzyFrame->setOnDel([&](const std::vector<std::wstring> & instruktor){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteInstruktor(instruktor[1], instruktor[2]);
         if(res)
@@ -171,7 +171,7 @@ MainFrame::MainFrame()
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
         }
         dial->ShowModal();
-        openTable("instruktorzy", _instruktorzyFrame);
+        openTable(L"instruktorzy", _instruktorzyFrame);
     });
 
     _instruktorzyFrame->setOnAdd([&](){
@@ -181,34 +181,34 @@ MainFrame::MainFrame()
         _instruktorForm->fillstopienHarcData(_db.getPossibleStopnieHarc());
         _instruktorForm->fillHufiecData(_db.getPossibleHufce());
 
-        _instruktorForm->setImie("");
-        _instruktorForm->setNazwisko("");
-        _instruktorForm->setEmail("");
-        _instruktorForm->setRozkaz("");
+        _instruktorForm->setImie(L"");
+        _instruktorForm->setNazwisko(L"");
+        _instruktorForm->setEmail(L"");
+        _instruktorForm->setRozkaz(L"");
 
         _instruktorForm->setModify(false);
         _instruktorForm->reload();
     });
 
-    _instruktorzyFrame->setOnSpec([&](const std::vector<std::string> & instr){
+    _instruktorzyFrame->setOnSpec([&](const std::vector<std::wstring> & instr){
         _stanyInstruktoraFrame->Show();
-        _stanyInstruktoraFrame->fillData(_db.getStanyInstruktora(instr[1] + " " +instr[2]));
+        _stanyInstruktoraFrame->fillData(_db.getStanyInstruktora(instr[1] + L" " +instr[2]));
         _stanyInstruktoraFrame->reload();
-        _stanyInstruktoraFrame->setValue(instr[1] + " " +instr[2]);
-        _stanyInstruktoraFrame->SetTitle("Stany instruktora: " + instr[1] + " " +instr[2]);
+        _stanyInstruktoraFrame->setValue(instr[1] + L" " +instr[2]);
+        _stanyInstruktoraFrame->SetTitle(L"Stany instruktora: " + instr[1] + L" " +instr[2]);
     });
 
     _instruktorForm = std::make_unique<InstruktorForm>(wxWindowID(ID::INSTRUKTORZY)+2000, &_db);
     _instruktorForm->setOnOK([&](){
-        openTable("instruktorzy", _instruktorzyFrame);
+        openTable(L"instruktorzy", _instruktorzyFrame);
     });
 
     //---
 
-    _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::string("Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
-    std::vector<std::pair<std::string,int>>({{"Nazwa",100},{"Data rozp.",100},{"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
+    _stanyInstruktoraFrame = std::make_unique<TableFrame>(std::wstring(L"Stany instruktora"), 300, wxWindowID(ID::INSTRUKTORZY)+3000,
+    std::vector<std::pair<std::wstring,int>>({{L"Nazwa",100},{L"Data rozp.",100},{L"Data zak.",100}}), TableFrame::TableStyle::OnlyLast);
 
-    _stanyInstruktoraFrame->setOnDel([&](const std::vector<std::string> & stan){
+    _stanyInstruktoraFrame->setOnDel([&](const std::vector<std::wstring> & stan){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteStatus(stan[1], _stanyInstruktoraFrame->getValue());
         if(res)
@@ -242,10 +242,10 @@ MainFrame::MainFrame()
 
     //---
 
-    _okresyFrame = std::make_unique<TableFrame>(std::string("Okresy skladkowe"), 400, wxWindowID(ID::OKRESY)+1000,
-    std::vector<std::pair<std::string,int>>({{"Poczatek okresu",150},{"Koniec okresu",150},{"Kwota",100}}), TableFrame::TableStyle::OnlyLast);
+    _okresyFrame = std::make_unique<TableFrame>(std::wstring(L"Okresy skladkowe"), 400, wxWindowID(ID::OKRESY)+1000,
+    std::vector<std::pair<std::wstring,int>>({{L"Początek okresu",150},{L"Koniec okresu",150},{L"Kwota[zł]",100}}), TableFrame::TableStyle::OnlyLast);
     
-    _okresyFrame->setOnDel([&](const std::vector<std::string> &okres){
+    _okresyFrame->setOnDel([&](const std::vector<std::wstring> &okres){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteOkres(okres[0]);
         if(res)
@@ -257,7 +257,7 @@ MainFrame::MainFrame()
             dial = std::make_unique<wxMessageDialog>(nullptr, wxT("Nie udało się wykonać polecenia"), wxT("Błąd"), wxOK | wxICON_ERROR);
         }
         dial->ShowModal();  
-        openTable("okresy", _okresyFrame);
+        openTable(L"okresy", _okresyFrame);
     });
 
     _okresyFrame->setOnAdd([&](){
@@ -269,7 +269,7 @@ MainFrame::MainFrame()
 
     _okresForm = std::make_unique<OkresForm>(wxWindowID(ID::OKRESY)+2000, &_db);
     _okresForm->setOnOK([&](){
-        openTable("okresy", _okresyFrame);
+        openTable(L"okresy", _okresyFrame);
     });
 
     //---
@@ -284,31 +284,31 @@ MainFrame::MainFrame()
         _wplatyFrame->setValue(_chooseWplatyFrame->getInstruktor());
     });
     _chooseWplatyFrame->setOnAll([&](){
-        openTable("wplaty", _wplatyFrame);
-        _wplatyFrame->setValue("-");
+        openTable(L"wplaty", _wplatyFrame);
+        _wplatyFrame->setValue(L"-");
     });
 
 
 
-    _wplatyFrame = std::make_unique<TableFrame>(std::string("Wplaty"), 450, wxWindowID(ID::WPLATY)+2000,
-    std::vector<std::pair<std::string,int>>({{"ID",50},{"Imie",100},{"Nazwisko",100},{"Kwota",100}, {"Data",100}}));
-    _wplatyFrame->setOnModify([&](const std::vector<std::string> & wplata){
+    _wplatyFrame = std::make_unique<TableFrame>(std::wstring(L"Wpłaty"), 450, wxWindowID(ID::WPLATY)+2000,
+    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imie",100},{L"Nazwisko",100},{L"Kwota[zł]",100}, {L"Data",100}}));
+    _wplatyFrame->setOnModify([&](const std::vector<std::wstring> & wplata){
         if(!_wplataForm->isOpened())
             _wplataForm->Show();
         _wplataForm->fillInstruktorData(_db.getAllInstruktorzy());
 
         _wplataForm->setID(wplata[0]);
-        _wplataForm->setInstruktor(wplata[1]+" "+wplata[2]);
+        _wplataForm->setInstruktor(wplata[1]+L" "+wplata[2]);
         _wplataForm->setKwota(wplata[3]);
-        _wplataForm->setDataD(std::string(1, wplata[4][0]) + std::string(1, wplata[4][1]));
-        _wplataForm->setDataM(std::string(1, wplata[4][3]) + std::string(1, wplata[4][4]));
-        _wplataForm->setDataR(std::string(1, wplata[4][6]) + std::string(1, wplata[4][7])+ std::string(1, wplata[4][8])+ std::string(1, wplata[4][9]));
+        _wplataForm->setDataD(std::wstring(1, wplata[4][0]) + std::wstring(1, wplata[4][1]));
+        _wplataForm->setDataM(std::wstring(1, wplata[4][3]) + std::wstring(1, wplata[4][4]));
+        _wplataForm->setDataR(std::wstring(1, wplata[4][6]) + std::wstring(1, wplata[4][7])+ std::wstring(1, wplata[4][8])+ std::wstring(1, wplata[4][9]));
 
         _wplataForm->setModify(true);
         _wplataForm->reload();
     });
 
-    _wplatyFrame->setOnDel([&](const std::vector<std::string> & wplata){
+    _wplatyFrame->setOnDel([&](const std::vector<std::wstring> & wplata){
         std::unique_ptr<wxMessageDialog> dial;
         bool res = _db.deleteWplata(wplata[0]);
         if(res)
@@ -322,7 +322,7 @@ MainFrame::MainFrame()
         dial->ShowModal();
         if(_wplatyFrame->getValue() == "-")
         {
-            openTable("wplaty", _wplatyFrame);
+            openTable(L"wplaty", _wplatyFrame);
         }
         else
         {
@@ -338,11 +338,11 @@ MainFrame::MainFrame()
             _wplataForm->Show();
          _wplataForm->fillInstruktorData(_db.getAllInstruktorzy());
 
-        _wplataForm->setID("");
-        _wplataForm->setKwota("");
-        _wplataForm->setDataD("");
-        _wplataForm->setDataM("");
-        _wplataForm->setDataR("");
+        _wplataForm->setID(L"");
+        _wplataForm->setKwota(L"");
+        _wplataForm->setDataD(L"");
+        _wplataForm->setDataM(L"");
+        _wplataForm->setDataR(L"");
 
         _wplataForm->setModify(false);
         _wplataForm->reload();
@@ -350,9 +350,9 @@ MainFrame::MainFrame()
 
     _wplataForm = std::make_unique<WplataForm>(wxWindowID(ID::WPLATY)+3000, &_db);
     _wplataForm->setOnOK([&](){
-        if(_wplatyFrame->getValue() == "-")
+        if(_wplatyFrame->getValue() == L"-")
         {
-            openTable("wplaty", _wplatyFrame);
+            openTable(L"wplaty", _wplatyFrame);
         }
         else
         {
@@ -367,32 +367,32 @@ MainFrame::MainFrame()
 
 
     _raportyFrame = std::make_unique<RaportyFrame>(wxWindowID(ID::RAPORTY)+1000);
-    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::wstring> & dat){
         _raportWplatIndFrame->fillData(_db.getWplatyIndData(dat));
         openPopUp(_raportWplatIndFrame.get());
     }, 0);
-    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::wstring> & dat){
         _raportWplatHufFrame->fillData(_db.getWplatyHufData(dat));
         openPopUp(_raportWplatHufFrame.get());
     }, 1);
-    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::wstring> & dat){
         _raportUzupelnienFrame->fillData(_db.getUzupelnieniaData());
         openPopUp(_raportUzupelnienFrame.get());
     }, 2);
-    _raportyFrame->setOnGenerate([&](const std::vector<std::string> & dat){
+    _raportyFrame->setOnGenerate([&](const std::vector<std::wstring> & dat){
         _raportUzupelnienFrame->fillData(_db.getOpoznieniaData(dat));
         openPopUp(_raportUzupelnienFrame.get());
     }, 3);
 
 
-    _raportWplatIndFrame = std::make_unique<TableFrame>(std::string("Raport wpłat indywidualnych"), 650, wxWindowID(ID::RAPORTY)+2000,
-    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"E-Mail",150}, {"St. instr.",100}, {"Hufiec", 100}, {"SUMA [zl]", 100}}), TableFrame::TableStyle::Raport);
+    _raportWplatIndFrame = std::make_unique<TableFrame>(std::wstring(L"Raport wpłat indywidualnych"), 650, wxWindowID(ID::RAPORTY)+2000,
+    std::vector<std::pair<std::wstring,int>>({{L"Imię",100},{L"Nazwisko",100},{L"E-Mail",150}, {L"St. instr.",100}, {L"Hufiec", 100}, {L"SUMA [zł]", 100}}), TableFrame::TableStyle::Raport);
 
-    _raportWplatHufFrame = std::make_unique<TableFrame>(std::string("Raport wpłat w hufcach"), 200, wxWindowID(ID::RAPORTY)+3000,
-    std::vector<std::pair<std::string,int>>({{"Nazwa",100}, {"SUMA [zl]", 100}}), TableFrame::TableStyle::Raport);
+    _raportWplatHufFrame = std::make_unique<TableFrame>(std::wstring(L"Raport wpłat w hufcach"), 200, wxWindowID(ID::RAPORTY)+3000,
+    std::vector<std::pair<std::wstring,int>>({{L"Nazwa",100}, {L"SUMA [zł]", 100}}), TableFrame::TableStyle::Raport);
 
-    _raportUzupelnienFrame = std::make_unique<TableFrame>(std::string("Raport opóźnień"), 700, wxWindowID(ID::RAPORTY)+4000,
-    std::vector<std::pair<std::string,int>>({{"Imie",100},{"Nazwisko",100},{"E-Mail",150}, {"St. instr.",100}, {"Hufiec", 100}, {"Do kiedy oplacono", 150}}), TableFrame::TableStyle::Raport);
+    _raportUzupelnienFrame = std::make_unique<TableFrame>(std::wstring(L"Raport opóźnień"), 700, wxWindowID(ID::RAPORTY)+4000,
+    std::vector<std::pair<std::wstring,int>>({{L"Imię",100},{L"Nazwisko",100},{L"E-Mail",150}, {L"St. instr.",100}, {L"Hufiec", 100}, {L"Do kiedy opłacono", 150}}), TableFrame::TableStyle::Raport);
 
     //---
     
@@ -402,22 +402,22 @@ MainFrame::MainFrame()
 
 void MainFrame::onHufce(wxCommandEvent& WXUNUSED(event))
 {
-    openTable("hufce", _hufceFrame);
+    openTable(L"hufce", _hufceFrame);
 }
 
 void MainFrame::onDruzyny(wxCommandEvent & event)
 {
-    openTable("druzyny", _druzynyFrame);
+    openTable(L"druzyny", _druzynyFrame);
 }
 
 void MainFrame::onInstruktorzy(wxCommandEvent& WXUNUSED(event))
 {
-    openTable("instruktorzy", _instruktorzyFrame);
+    openTable(L"instruktorzy", _instruktorzyFrame);
 }
 
 void MainFrame::onOkresy(wxCommandEvent & event)
 {
-    openTable("okresy", _okresyFrame);
+    openTable(L"okresy", _okresyFrame);
 }
 
 void MainFrame::onWplaty(wxCommandEvent & event)
@@ -447,7 +447,7 @@ void MainFrame::onResetWplat(wxCommandEvent & event)
     _resetFrame->setOnlyWplaty(true);
 }
 
-void MainFrame::openTable(const std::string & name,  std::unique_ptr<TableFrame> & frame)
+void MainFrame::openTable(const std::wstring & name,  std::unique_ptr<TableFrame> & frame)
 {
     this->closeAll();    
     frame->Show();
