@@ -256,6 +256,9 @@ BEGIN
 	SELECT id_instr INTO vID FROM instruktorzy
   WHERE pImieNazwisko LIKE (imie || ' ' || nazwisko);
   return vID;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
 END;
 
 --#################### PROCEDURY ####################
@@ -390,6 +393,9 @@ BEGIN
   UPDATE STANY_INSTRUKTOROW
   SET koniec = NULL
   WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND poczatek = vNowyPocz;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
 END;
 
 CREATE OR REPLACE PROCEDURE dodajInstruktora
@@ -563,9 +569,12 @@ CREATE OR REPLACE PROCEDURE usunOkresSladkowy IS
 BEGIN
   SELECT poczatek INTO vData FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
 
-  DELETE FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
-
   UPDATE OKRESY_SKLADKOWE SET koniec = NULL WHERE koniec = vData - EXTRACT(DAY FROM vData);
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+
+  DELETE FROM OKRESY_SKLADKOWE WHERE poczatek = vData;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajWplate
