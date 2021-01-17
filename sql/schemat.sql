@@ -553,6 +553,41 @@ BEGIN
 
   UPDATE OKRESY_SKLADKOWE SET koniec = NULL WHERE koniec = vData - EXTRACT(DAY FROM vData);
 END;
+
+CREATE OR REPLACE PROCEDURE dodajWplate
+(
+  pImieNazwisko IN VARCHAR,
+  pKwota IN VARCHAR,
+  pData IN VARCHAR
+) IS
+BEGIN
+  INSERT INTO wplaty(id_wplaty, kwota, data, instruktor)
+  VALUES(wplaty_id_seq.nextval, TO_NUMBER(pKwota), to_date(pData,'DD-MM-YYYY'), IMIENAZWISKODOID(pImieNazwisko));
+END;
+
+CREATE OR REPLACE PROCEDURE usunWplate
+(
+  pID IN VARCHAR
+) IS
+BEGIN
+  DELETE FROM wplaty
+  WHERE id_wplaty = TO_NUMBER(pID);
+END;
+
+CREATE OR REPLACE PROCEDURE modyfikujWplate
+(
+  pID IN VARCHAR,
+  pImieNazwisko IN VARCHAR,
+  pKwota IN VARCHAR,
+  pData IN VARCHAR
+) IS
+BEGIN
+  UPDATE wplaty
+  SET kwota = TO_NUMBER(pKwota),
+  data = to_date(pData,'DD-MM-YYYY'),
+  instruktor = IMIENAZWISKODOID(pImieNazwisko)
+  WHERE id_wplaty = TO_NUMBER(pID);
+END;
 --gdfgfdgdf
 
 CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
