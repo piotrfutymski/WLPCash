@@ -130,6 +130,9 @@ BEGIN
   GROUP BY instruktor
   HAVING instruktor = pID;
   return vSuma;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    return 0;
 END;
 
 CREATE OR REPLACE FUNCTION sumaSkladekHufcaWOkresie
