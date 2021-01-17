@@ -412,7 +412,7 @@ CREATE OR REPLACE PROCEDURE dodajInstruktora
   vID INSTRUKTORZY.ID_INSTR%TYPE;
 BEGIN
   vID := instruktorzy_id_seq.nextval;
-  IF pHufiec = '' THEN
+  IF pHufiec != '' THEN
     INSERT INTO INSTRUKTORZY(id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, hufiec)
     VALUES (vID, pImie, pNazwisko, pEmail, pRozkaz, pStInstr, pStHarc, pHufiec);
   ELSE

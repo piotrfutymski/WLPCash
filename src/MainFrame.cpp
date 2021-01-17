@@ -81,8 +81,8 @@ MainFrame::MainFrame()
 
     //---
 
-    _druzynyFrame = std::make_unique<TableFrame>(std::wstring(L"Drużyny"), 830, wxWindowID(ID::DRUZYNY)+1000,
-    std::vector<std::pair<std::wstring, int>>({{L"Nazwa", 100},{L"Numer",70},{L"Czy próbna",80},{L"Patron",200},{L"Drużynowy",180},{L"Hufiec",100},{L"Typ",100}}));
+    _druzynyFrame = std::make_unique<TableFrame>(std::wstring(L"Drużyny"), 1030, wxWindowID(ID::DRUZYNY)+1000,
+    std::vector<std::pair<std::wstring, int>>({{L"Nazwa", 300},{L"Numer",70},{L"Czy próbna",80},{L"Patron",200},{L"Drużynowy",180},{L"Hufiec",100},{L"Typ",100}}));
     _druzynyFrame->setOnModify([&](const std::vector<std::wstring> & druzyna){
         if(!_druzynaForm->isOpened())
             _druzynaForm->Show();
@@ -137,8 +137,8 @@ MainFrame::MainFrame()
 
     //---
 
-    _instruktorzyFrame = std::make_unique<TableFrame>(std::wstring(L"Instruktorzy"), 850, wxWindowID(ID::INSTRUKTORZY)+1000, 
-    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imię",100},{L"Nazwisko",100},{L"E-mail",200},{L"Rozkaz",100},{L"St. instr.",100},{L"St. harcerski",100},{L"Hufiec",100}}), TableFrame::TableStyle::Special);
+    _instruktorzyFrame = std::make_unique<TableFrame>(std::wstring(L"Instruktorzy"), 950, wxWindowID(ID::INSTRUKTORZY)+1000, 
+    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imię",100},{L"Nazwisko",100},{L"E-mail",300},{L"Rozkaz",100},{L"St. instr.",100},{L"St. harcerski",100},{L"Hufiec",100}}), TableFrame::TableStyle::Special);
     
     _instruktorzyFrame->setOnModify([&](const std::vector<std::wstring> & instruktor){
         if(!_instruktorForm->isOpened())
@@ -185,6 +185,7 @@ MainFrame::MainFrame()
         _instruktorForm->setNazwisko(L"");
         _instruktorForm->setEmail(L"");
         _instruktorForm->setRozkaz(L"");
+        _instruktorForm->setHufiec(L"");
 
         _instruktorForm->setModify(false);
         _instruktorForm->reload();
