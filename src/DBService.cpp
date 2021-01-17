@@ -76,7 +76,7 @@ std::vector<std::vector<std::wstring>> DBService::getTableData(const std::wstrin
         hufiecs.resize(count);
         typs.resize(count);
 
-        *sql<<"select d.nazwa, d.numer, d.probna, d.patron, (i.imie || ' ' || i.nazwisko), d.hufiec, d.typ_druzyny from \
+        *sql<<"select d.nazwa, d.numer, d.probna, coalesce(d.patron,'brak'), (i.imie || ' ' || i.nazwisko), d.hufiec , d.typ_druzyny from \
                 druzyny d left outer join instruktorzy i on(d.druzynowy = i.id_instr) order by d.nazwa;", 
                 soci::into(nazwas), soci::into(numers), soci::into(probnas), soci::into(patrons), soci::into(druzynowys),
                 soci::into(hufiecs), soci::into(typs);
@@ -268,7 +268,7 @@ std::vector<std::vector<std::wstring>> DBService::getWplatyInstruktora(const std
 
     *sql<<"select id_wplaty, imie, nazwisko, kwota, to_char(data, 'DD-MM-YYYY') from wplaty left \
     join instruktorzy on(instruktor = id_instr) where instruktor = (select id_instr from instruktorzy where (imie || ' ' || nazwisko) = ?) \
-     order by nazwisko, data;", 
+     order by nazwisko, data desc;", 
         soci::use(DateConverter::to_string(instruktor)), soci::into(ids), soci::into(imies), soci::into(nazwiskos), soci::into(kwotas), soci::into(datas);
 
     for(int i = 0; i < count; i++)
@@ -315,7 +315,7 @@ std::vector<std::vector<std::wstring>> DBService::getWplatyIndData(const std::ve
         hufce_s.resize(count);
         kwota_s.resize(count);
 
-        *sql<<"select imie, nazwisko, email, st_instr, hufiec, sumaSkladekInstruktoraWOkresie(id_instr, ?,?) from instruktorzy order by nazwisko;", 
+        *sql<<"select imie, nazwisko, email, st_instr, coalesce(hufiec, 'brak'), sumaSkladekInstruktoraWOkresie(id_instr, ?,?) from instruktorzy order by nazwisko;", 
         soci::use(DateConverter::to_string(DateConverter::glue(dat[0],dat[1],dat[2]))),soci::use(DateConverter::to_string(DateConverter::glue(dat[3],dat[4],dat[5]))),
         soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(st_instrs), soci::into(hufce_s),  soci::into(kwota_s);
 
@@ -351,7 +351,7 @@ std::vector<std::vector<std::wstring>> DBService::getWplatyHufData(const std::ve
     nazwa.resize(count);
     kwota.resize(count);
 
-    *sql<<"select nazwa, sumaSkladekHufcaWOkresie(nazwa, ?,?,?,?,?,?) from hufce order by nazwa;", 
+    *sql<<"select nazwa, sumaSkladekHufcaWOkresie(nazwa, ?,?) from hufce order by nazwa;", 
     soci::use(DateConverter::to_string(DateConverter::glue(dat[0],dat[1],dat[2]))),soci::use(DateConverter::to_string(DateConverter::glue(dat[3],dat[4],dat[5]))),
     soci::into(nazwa), soci::into(kwota);
     
@@ -394,7 +394,7 @@ std::vector<std::vector<std::wstring>> DBService::getUzupelnieniaData()
         hufce_s.resize(count);
         uzupelnie_s.resize(count);
 
-        *sql<<"select imie, nazwisko, email, st_instr, hufiec, doKiedyUzupelniono(id_instr) from instruktorzy order by nazwisko;", 
+        *sql<<"select imie, nazwisko, email, st_instr, coalesce(hufiec, 'brak'), to_char(doKiedyUzupelniono(id_instr),'mm-yyyy') from instruktorzy order by nazwisko;", 
         soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(st_instrs), soci::into(hufce_s),  soci::into(uzupelnie_s);
 
         for(int i = 0; i < count; i++)
@@ -439,7 +439,7 @@ std::vector<std::vector<std::wstring>> DBService::getOpoznieniaData(const std::v
         hufce_s.resize(count);
         uzupelnie_s.resize(count);
 
-        *sql<<"select imie, nazwisko, email, st_instr, hufiec, doKiedyUzupelniono(id_instr) from instruktorzy where czyUzupelnionoDo(id_instr,?) = 'NIE' order by nazwisko;",
+        *sql<<"select imie, nazwisko, email, st_instr, coalesce(hufiec, 'brak'), to_char(doKiedyUzupelniono(id_instr),'mm-yyyy') from instruktorzy where czyUzupelnionoDo(id_instr,?) = 'NIE' order by nazwisko;",
         soci::use(DateConverter::to_string(DateConverter::glue(dat[0],dat[1],dat[2]))),
         soci::into(imies), soci::into(nazwiskas), soci::into(emails), soci::into(st_instrs), soci::into(hufce_s),  soci::into(uzupelnie_s);
 
@@ -639,6 +639,8 @@ std::vector<std::wstring> DBService::getPossibleStatusy()
 
 bool DBService::updateHufiec(const std::wstring & nazwa, const std::vector<std::wstring> & hufiec)
 {
+    if(!DateConverter::check_if_valid_data(hufiec))
+        return false;
     try
     {   
         if(hufiec.size() != 2)
@@ -657,6 +659,8 @@ bool DBService::updateHufiec(const std::wstring & nazwa, const std::vector<std::
 
 bool DBService::insertHufiec(const std::vector<std::wstring> & hufiec)
 {
+    if(!DateConverter::check_if_valid_data(hufiec))
+        return false;
     try
     {   
         if(hufiec.size() != 2)
@@ -689,6 +693,8 @@ bool DBService::deleteHufiec(const std::wstring & nazwa)
 
 bool DBService::updateDruzyna(const std::wstring & nazwa, const std::wstring & numer, const std::vector<std::wstring> & druzyna)
 {
+    if(!DateConverter::check_if_valid_data(druzyna))
+        return false;
     try
     {   
         if(druzyna.size() != 7)
@@ -708,6 +714,8 @@ bool DBService::updateDruzyna(const std::wstring & nazwa, const std::wstring & n
 }
 bool DBService::insertDruzyna(const std::vector<std::wstring> & druzyna)
 {
+    if(!DateConverter::check_if_valid_data(druzyna))
+        return false;
     try
     {   
         if(druzyna.size() != 7)
@@ -742,6 +750,8 @@ bool DBService::deleteDruzyna(const std::wstring & nazwa, const std::wstring & n
 
 bool DBService::updateInstruktor(const std::wstring & imie, const std::wstring & nazwisko, const std::vector<std::wstring> & instruktor)
 {
+    if(!DateConverter::check_if_valid_data(instruktor))
+        return false;
     try
     {   
         if(instruktor.size() != 7)
@@ -761,6 +771,8 @@ bool DBService::updateInstruktor(const std::wstring & imie, const std::wstring &
 }
 bool DBService::insertInstruktor(const std::vector<std::wstring> & instruktor)
 {
+    if(!DateConverter::check_if_valid_data(instruktor))
+        return false;
     try
     {   
         if(instruktor.size() != 10)
@@ -797,6 +809,8 @@ bool DBService::deleteInstruktor(const std::wstring & imie, const std::wstring &
 
 bool DBService::insertStatus(const std::vector<std::wstring> & status)
 {
+    if(!DateConverter::check_if_valid_data(status))
+        return false;
     try
     {   
         if(status.size() != 5)
@@ -831,12 +845,15 @@ bool DBService::deleteStatus(const std::wstring & dataPocz, const std::wstring &
 
 bool DBService::insertOkres(const std::vector<std::wstring> & okres)
 {
+    if(!DateConverter::check_if_valid_data(okres))
+        return false;
+
     try
     {   
-        if(okres.size() != 4)
+        if(okres.size() != 3)
             return false;
         *sql<<"BEGIN dodajOkresSladkowy(?,?); END;",
-        soci::use(DateConverter::to_string(okres[0])) ,soci::use(DateConverter::to_string(DateConverter::glue(L"1",okres[1],okres[2])));
+        soci::use(DateConverter::to_string(okres[2])) ,soci::use(DateConverter::to_string(DateConverter::glue(L"1",okres[0],okres[1])));
         *sql<<"BEGIN commit; END;";
     }
     catch(const std::exception e)
@@ -863,6 +880,9 @@ bool DBService::deleteOkres(const std::wstring & dataPocz)
 
 bool DBService::updateWplata(const std::wstring & id, const std::vector<std::wstring> & wplata)
 {
+    if(!DateConverter::check_if_valid_data(wplata))
+        return false;
+
     try
     {   
         if(wplata.size() != 5)
@@ -881,6 +901,8 @@ bool DBService::updateWplata(const std::wstring & id, const std::vector<std::wst
 }
 bool DBService::insertWplata(const std::vector<std::wstring> & wplata)
 {
+    if(!DateConverter::check_if_valid_data(wplata))
+        return false;
     try
     {   
         if(wplata.size() != 5)

@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <codecvt>
 #include <locale>
+#include <vector>
 
 class DateConverter
 {
@@ -31,4 +32,19 @@ public:
     {
         return strconverter.from_bytes(str);
     }
+
+    static bool check_if_valid_data(const std::vector<std::wstring> & data)
+    {
+        for(auto & str: data)
+        {
+             for (auto c: to_string(str)) 
+             {
+                if (static_cast<unsigned char>(c) > 127) {
+                return false;
+                }
+            }
+        }
+        return true;
+    }
+
 };
