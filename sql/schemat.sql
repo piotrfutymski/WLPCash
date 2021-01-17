@@ -68,13 +68,15 @@ CREATE TABLE STANY_INSTRUKTOROW
   koniec DATE,
   status VARCHAR2(64) NOT NULL CONSTRAINT FK_ST_STATUS REFERENCES STATUSY(nazwa),
   instruktor NUMBER(6) CONSTRAINT FK_ST_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr) ON DELETE CASCADE,
-  CONSTRAINT PK_STANY_INSTRUKTOROW PRIMARY KEY(poczatek, instruktor)
+  CONSTRAINT PK_STANY_INSTRUKTOROW PRIMARY KEY(poczatek, instruktor),
+  CONSTRAINT CHK_POCZ_KON_STANY_INSTRUKTOROW CHECK(poczatek < koniec)
 );
 CREATE TABLE OKRESY_SKLADKOWE
 (
   poczatek DATE CONSTRAINT PK_OKRESY_SKLADKOWE PRIMARY KEY,
   kwota NUMBER(8,2) NOT NULL, 
-  koniec DATE
+  koniec DATE,
+  CONSTRAINT CHK_POCZ_KON_OKRESY_SKLADKOWE CHECK(poczatek < koniec)
 );
 CREATE TABLE WPLATY
 (
@@ -130,6 +132,9 @@ BEGIN
   GROUP BY instruktor
   HAVING instruktor = pID;
   return vSuma;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    return 0;
 END;
 
 CREATE OR REPLACE FUNCTION sumaSkladekHufcaWOkresie
@@ -149,6 +154,9 @@ BEGIN
   GROUP BY hufiec
   HAVING hufiec IS NOT NULL AND hufiec = pNazwa;
   return vSuma;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    return 0;
 END;
 
 CREATE OR REPLACE FUNCTION naleznoscInstruktoraDo
@@ -215,6 +223,10 @@ BEGIN
     vWymaganed := naleznoscInstruktoraDo(pID, LAST_DAY(vRes+1));
     EXIT WHEN vWymaganed > vZaplaconed;
     vRes := LAST_DAY(vRes+1);
+    IF vRes > CURRENT_DATE THEN
+      vRes := CURRENT_DATE;
+      EXIT;
+    END IF;
   END LOOP;
 
   return vRes;
@@ -244,6 +256,9 @@ BEGIN
 	SELECT id_instr INTO vID FROM instruktorzy
   WHERE pImieNazwisko LIKE (imie || ' ' || nazwisko);
   return vID;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
 END;
 
 --#################### PROCEDURY ####################
@@ -378,6 +393,9 @@ BEGIN
   UPDATE STANY_INSTRUKTOROW
   SET koniec = NULL
   WHERE instruktor = IMIENAZWISKODOID(pImieNazw) AND poczatek = vNowyPocz;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
 END;
 
 CREATE OR REPLACE PROCEDURE dodajInstruktora
@@ -430,7 +448,25 @@ CREATE OR REPLACE PROCEDURE modyfikujInstruktora
   pStHarc IN VARCHAR,
   pHufiec IN VARCHAR
 ) IS
+  vID INSTRUKTORZY.id_instr%TYPE;
+  vStaryHufiec INSTRUKTORZY.hufiec%TYPE;
 BEGIN
+SELECT id_instr, coalesce(hufiec, '') INTO vID, vStaryHufiec FROM instruktorzy WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+IF vStaryHufiec != pHufiec THEN
+  UPDATE HUFCOWI
+  SET hufcowy = hufcowy
+  WHERE hufcowy = vID;
+  IF SQL%FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+  UPDATE Druzyny
+  SET druzynowy = druzynowy
+  WHERE druzynowy = vID;
+  IF SQL%FOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+END IF;
+
 IF pHufiec = '' THEN
   UPDATE INSTRUKTORZY
   SET imie = pImie,
@@ -440,7 +476,7 @@ IF pHufiec = '' THEN
   st_instr = pStInstr,
   st_harc = pStHarc,
   hufiec = NULL
-  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+  WHERE id_instr = vID;
 ELSE
 UPDATE INSTRUKTORZY
   SET imie = pImie,
@@ -450,11 +486,11 @@ UPDATE INSTRUKTORZY
   st_instr = pStInstr,
   st_harc = pStHarc,
   hufiec = pHufiec
-  WHERE imie = pStareImie AND nazwisko = pStareNazwisko;
+  WHERE id_instr = vID;
 END IF;
-  IF SQL%NOTFOUND THEN
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
-  END IF;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajDruzyne
@@ -467,14 +503,20 @@ CREATE OR REPLACE PROCEDURE dodajDruzyne
   pHufiec IN VARCHAR,
   pTyp IN VARCHAR
 )IS
+vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
+  vID :=IMIENAZWISKODOID(pImieNazwisko);
   IF pPatron = '' THEN
     INSERT INTO Druzyny(nazwa, numer, probna, druzynowy, hufiec, typ_druzyny)
-    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, vID, pHufiec, pTyp);
   ELSE
     INSERT INTO Druzyny(nazwa, numer, probna, patron, druzynowy, hufiec, typ_druzyny)
-    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, pPatron, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, pPatron, vID, pHufiec, pTyp);
   END IF;
+
+  UPDATE INSTRUKTORZY
+  SET hufiec = pHufiec
+  WHERE id_instr=vID;
 END;
 
 CREATE OR REPLACE PROCEDURE usunDruzyne
@@ -503,14 +545,16 @@ CREATE OR REPLACE PROCEDURE modyfikujDruzyne
   pHufiec IN VARCHAR,
   pTyp IN VARCHAR
 )IS
+vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
+  vID := IMIENAZWISKODOID(pImieNazwisko);
   IF pPatron = '' THEN
     UPDATE DRUZYNY
     SET nazwa = pNazwa,
     numer = TO_NUMBER(pNumer),
     probna = pProbna,
     patron = NULL,
-    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    druzynowy = vID,
     hufiec = pHufiec,
     typ_druzyny = pTyp
     WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
@@ -520,7 +564,7 @@ BEGIN
     numer = TO_NUMBER(pNumer),
     probna = pProbna,
     patron = pPatron,
-    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    druzynowy = vID,
     hufiec = pHufiec,
     typ_druzyny = pTyp
     WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
@@ -528,6 +572,9 @@ BEGIN
   IF SQL%NOTFOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
   END IF;
+  UPDATE INSTRUKTORZY
+  SET hufiec = pHufiec
+  WHERE id_instr=vID;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajOkresSladkowy
@@ -551,9 +598,12 @@ CREATE OR REPLACE PROCEDURE usunOkresSladkowy IS
 BEGIN
   SELECT poczatek INTO vData FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
 
-  DELETE FROM OKRESY_SKLADKOWE WHERE koniec IS NULL;
-
   UPDATE OKRESY_SKLADKOWE SET koniec = NULL WHERE koniec = vData - EXTRACT(DAY FROM vData);
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+
+  DELETE FROM OKRESY_SKLADKOWE WHERE poczatek = vData;
 END;
 
 CREATE OR REPLACE PROCEDURE dodajWplate
@@ -589,233 +639,6 @@ BEGIN
   data = to_date(pData,'DD-MM-YYYY'),
   instruktor = IMIENAZWISKODOID(pImieNazwisko)
   WHERE id_wplaty = TO_NUMBER(pID);
-END;
---gdfgfdgdf
-
-CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
-(
-	pNazwa IN STOPNIE_INSTRUKTORSKIE.NAZWA%TYPE
-) IS
-BEGIN
-	INSERT INTO STOPNIE_INSTRUKTORSKIE(nazwa)
-	VALUES (pNazwa);
-END;
-
-CREATE OR REPLACE PROCEDURE STOPNIE_HARCERSKIE_INS
-(
-	pNazwa IN STOPNIE_HARCERSKIE.NAZWA%TYPE
-) IS
-BEGIN
-	INSERT INTO STOPNIE_HARCERSKIE(nazwa)
-	VALUES (pNazwa);
-END;
-
-CREATE OR REPLACE PROCEDURE HUFIEC_INS
-(
-	pNazwa IN HUFCE.NAZWA%TYPE
-) IS
-BEGIN
-	INSERT INTO HUFCE(nazwa)
-	VALUES (pNazwa);
-END;
-
-CREATE OR REPLACE PROCEDURE TYPY_DRUZYN_INS
-(
-  pNazwa IN TYPY_DRUZYN.NAZWA%TYPE
-) IS
-BEGIN
-	INSERT INTO TYPY_DRUZYN(nazwa)
-	VALUES (pNazwa);
-END;
-
-CREATE OR REPLACE PROCEDURE INSTRUKTORZY_INS
-(
-    pImie IN INSTRUKTORZY.IMIE%TYPE,
-    pNazwisko IN INSTRUKTORZY.NAZWISKO%TYPE,
-    pRozkaz IN INSTRUKTORZY.ROZKAZ_PRZYJECIA%TYPE,
-    pStInstr IN INSTRUKTORZY.ST_HARC%TYPE,
-    pStHarc IN INSTRUKTORZY.ST_INSTR%TYPE,
-    pHufiec IN INSTRUKTORZY.HUFIEC%TYPE
-) IS 
-vID INSTRUKTORZY.ID_INSTR%TYPE;
-BEGIN
-  	vID := instruktorzy_id_seq.nextval;
-    INSERT INTO INSTRUKTORZY(id_instr, imie, nazwisko, rozkaz_przyjecia, st_instr, st_harc, hufiec)
-    VALUES (vID, pImie, pNazwisko, pRozkaz, pStInstr, pStHarc, pHufiec);
-END;
---#################### FUNKCJE #################### 
-
-CREATE OR REPLACE PROCEDURE PrzypiszDoHufca
-(
-    pIdInstr IN instruktorzy.id_instr%TYPE,
-    pHufiec IN instruktorzy.hufiec%TYPE
-) IS
-BEGIN
---SPRAWDZ CZY NIE JEST HUFCOWYM
-    UPDATE INSTRUKTORZY
-    SET hufiec = pHufiec
-    WHERE id_instr=pIdInstr;
-END;
-
-CREATE OR REPLACE PROCEDURE MianujHufcowym
-(
-    pIdInstr IN instruktorzy.id_instr%TYPE,
-    pHufiec IN instruktorzy.hufiec%TYPE
-) IS
-BEGIN
-    PrzypiszDoHufca(pIdInstr, pHufiec);
-    
-    DELETE FROM hufcowi
-    WHERE hufiec = pHufiec;
-    INSERT INTO hufcowi(hufiec, hufcowy)
-    VALUES(pHufiec, pIdInstr);
-END;
-
-CREATE OR REPLACE PROCEDURE DodajStatus
-(
-	pNazwa IN STATUSY.NAZWA%TYPE
-) IS
-BEGIN
-	INSERT INTO STATUSY(nazwa)
-	VALUES (pNazwa);
-END;
-
-CREATE OR REPLACE PROCEDURE StanPoczatkowyInstruktora
-(
-  pPoczatek IN STANY_INSTRUKTOROW.poczatek%TYPE,
-  pidInstr IN STANY_INSTRUKTOROW.instruktor%TYPE
-)IS
-BEGIN
-  INSERT INTO STANY_INSTRUKTOROW(poczatek,status,instruktor)
-  VALUES (pPoczatek, 'Czynny', pidInstr);
-END;
-
-CREATE OR REPLACE PROCEDURE NowyInstruktor_PUB
-(
-  pPoczatek IN STANY_INSTRUKTOROW.poczatek%TYPE,
-  pHufiec IN instruktorzy.hufiec%TYPE,
-  pImie IN INSTRUKTORZY.IMIE%TYPE,
-  pNazwisko IN INSTRUKTORZY.NAZWISKO%TYPE,
-  pRozkaz IN INSTRUKTORZY.ROZKAZ_PRZYJECIA%TYPE,
-  pStInstr IN INSTRUKTORZY.ST_HARC%TYPE,
-  pStHarc IN INSTRUKTORZY.ST_INSTR%TYPE
-) IS
-vID INSTRUKTORZY.ID_INSTR%TYPE;
-BEGIN
-  vID:=NowyInstruktor(pImie,pNazwisko,pRozkaz,pStInstr,pStHarc);
-  PrzypiszDoHufca(vID,pHufiec);
-  StanPoczatkowyInstruktora(pPoczatek, viD);
-END;
-
-CREATE OR REPLACE PROCEDURE ZmianaStanu
-(
-  pData IN STANY_INSTRUKTOROW.poczatek%TYPE,
-  pidInstr IN STANY_INSTRUKTOROW.instruktor%TYPE,
-  pStan IN STANY_INSTRUKTOROW.status%TYPE
-) IS
-BEGIN
-  UPDATE STANY_INSTRUKTOROW
-  SET koniec = pData
-  WHERE pidInstr = instruktor AND koniec is null;
-  INSERT INTO STANY_INSTRUKTOROW(poczatek,status,instruktor)
-  VALUES (pData, pStan, pidInstr);
-END;
-
-CREATE OR REPLACE PROCEDURE KolejnyOkresSkladkowy
-(
-  pStart IN OKRESY_SKLADKOWE.poczatek%TYPE,
-  pKwota IN OKRESY_SKLADKOWE.kwota%TYPE
-  --ZMIENIĆ ARGUMENT DATA NA MIESIĄC I ROK--
-) IS
-vIle NATURAL;
-BEGIN
-  SELECT COUNT(*)  INTO vILE FROM OKRESY_SKLADKOWE;
-  if vILE > 0 then
-    UPDATE OKRESY_SKLADKOWE
-    SET koniec = pStart - interval '1' month
-    WHERE koniec is null;
-  end if;
-  INSERT INTO OKRESY_SKLADKOWE(poczatek,kwota)
-  VALUES (pStart, pKwota);
-  
-END;
-
-CREATE OR REPLACE PROCEDURE NowaWplata
-(
-  pInstruktor IN WPLATY.instruktor%TYPE,
-  pData IN WPLATY.data%TYPE,
-  pKwota IN WPLATY.kwota%TYPE
-) IS 
-BEGIN
-  INSERT INTO WPLATY(id_wplaty, kwota, data, instruktor)
-  VALUES (wplaty_id_seq.nextval, pKwota, pData, pInstruktor);
-END;
-
-CREATE OR REPLACE FUNCTION DoKiedyOplacone
-(
-  pIDInstr IN INSTRUKTORZY.id_instr%TYPE
-) RETURN DATE IS vData DATE;
-vWplacone NATURAL;
-BEGIN
-  SELECT SUM(kwota) INTO vWplacone from wplaty where instruktor = pIDInstr;
-  
-  -- NAJWAŻNIEJSZA FUNKCJA--
-  
-END;
-
-CREATE OR REPLACE PROCEDURE zmienDruzynowego
-(
-    pNazwa IN druzyny.nazwa%type,
-    pNumer IN druzyny.numer%type,
-    pIdInstr IN druzyny.druzynowy%type
-) IS
-    vNowyHufiec druzyny.hufiec%type;
-BEGIN
-    UPDATE druzyny
-    SET druzynowy = pIdInstr
-    WHERE druzyny.nazwa = pNazwa AND druzyny.numer = pNumer;
-    
-    SELECT hufiec
-    INTO vNowyHufiec
-    FROM druzyny
-    WHERE druzyny.nazwa = pNazwa AND druzyny.numer = pNumer;
-    
-    PrzypiszDoHufca(pIdInstr, vNowyHufiec);
-END;
-
-CREATE OR REPLACE PROCEDURE ZmienHufiecDruzyny
-(
-    pNazwa IN druzyny.nazwa%type,
-    pNumer IN druzyny.numer%type,
-    pHufiec IN druzyny.hufiec%TYPE
-) IS
-    vDruzynowy druzyny.druzynowy%type;
-BEGIN
-    UPDATE druzyny
-    SET hufiec = pHufiec
-    WHERE druzyny.nazwa = pNazwa AND druzyny.numer = pNumer;
-    
-    SELECT druzynowy
-    INTO vDruzynowy
-    FROM druzyny
-    WHERE druzyny.nazwa = pNazwa AND druzyny.numer = pNumer;
-    
-    PrzypiszDoHufca(vDruzynowy, pHufiec);
-END;
-
-CREATE OR REPLACE PROCEDURE NowaDruzyna
-(
-    pNazwa IN druzyny.nazwa%type,
-    pNumer IN druzyny.numer%type,
-    pProb IN druzyny.probna%type,
-    pDruzynowy IN druzyny.druzynowy%type,
-    pHufiec IN druzyny.hufiec%type,
-    pTyp IN druzyny.typ_druzyny%type
-) IS
-BEGIN
-    INSERT INTO Druzyny(nazwa, numer, probna, druzynowy, hufiec, typ_druzyny)
-    VALUES (pNazwa, pNumer, pProb, pDruzynowy, pHufiec, pTyp);
-    zmienDruzynowego(pNazwa, pNumer, pDruzynowy);
 END;
 
 --#################### INDEKSY #################### 
