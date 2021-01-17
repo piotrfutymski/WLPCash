@@ -49,13 +49,13 @@ CREATE TABLE DRUZYNY
 (
 	nazwa VARCHAR2(64),
 	numer NUMBER(6),
-	probna CHAR(1) NOT NULL,
+	probna VARCHAR NOT NULL,
 	patron VARCHAR2(64),
 	druzynowy NUMBER(6) NOT NULL CONSTRAINT FK_DR_INSTRUKTORZY REFERENCES INSTRUKTORZY(id_instr),
 	hufiec VARCHAR2(64) NOT NULL CONSTRAINT FK_DR_HUFCE REFERENCES HUFCE(nazwa),
 	typ_druzyny VARCHAR2(64) NOT NULL CONSTRAINT FK_DR_TYPY_DRUZYN REFERENCES TYPY_DRUZYN(nazwa),
 	CONSTRAINT PK_DRUZYNY PRIMARY KEY(nazwa, numer),
-  CONSTRAINT CHK_PROBNA CHECK(probna IN ('T', 'N')),
+  CONSTRAINT CHK_PROBNA CHECK(probna IN ('TAK', 'NIE')),
   CONSTRAINT U_DRUZYNY UNIQUE(druzynowy)
 );
 CREATE TABLE STATUSY
@@ -457,9 +457,80 @@ UPDATE INSTRUKTORZY
   IF SQL%NOTFOUND THEN
     raise_application_error(-20001, 'NO OPERATION');
   END IF;
-
 END;
 
+CREATE OR REPLACE PROCEDURE dodajDruzyne
+(
+  pNazwa IN VARCHAR,
+  pNumer IN VARCHAR,
+  pProbna IN VARCHAR,
+  pPatron IN VARCHAR,
+  pImieNazwisko IN VARCHAR,
+  pHufiec IN VARCHAR,
+  pTyp IN VARCHAR
+)IS
+BEGIN
+  IF pPatron = '' THEN
+    INSERT INTO Druzyny(nazwa, numer, probna, druzynowy, hufiec, typ_druzyny)
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+  ELSE
+    INSERT INTO Druzyny(nazwa, numer, probna, patron, druzynowy, hufiec, typ_druzyny)
+    VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, pPatron, IMIENAZWISKODOID(pImieNazwisko), pHufiec, pTyp);
+  END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE usunDruzyne
+(
+  pNazwa IN VARCHAR,
+  pNumer IN VARCHAR
+)IS
+BEGIN
+  DELETE FROM DRUZYNY
+  WHERE nazwa = pNazwa AND numer = TO_NUMBER(pNumer);
+
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE modyfikujDruzyne
+(
+  pStaraNazwa IN VARCHAR,
+  pStaryNumer IN VARCHAR,
+  pNazwa IN VARCHAR,
+  pNumer IN VARCHAR,
+  pProbna IN VARCHAR,
+  pPatron IN VARCHAR,
+  pImieNazwisko IN VARCHAR,
+  pHufiec IN VARCHAR,
+  pTyp IN VARCHAR
+)IS
+BEGIN
+  IF pPatron = '' THEN
+    UPDATE DRUZYNY
+    SET nazwa = pNazwa,
+    numer = TO_NUMBER(pNumer),
+    probna = pProbna,
+    patron = NULL,
+    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    hufiec = pHufiec,
+    typ_druzyny = pTyp
+    WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
+  ELSE
+    UPDATE DRUZYNY
+    SET nazwa = pNazwa,
+    numer = TO_NUMBER(pNumer),
+    probna = pProbna,
+    patron = pPatron,
+    druzynowy = IMIENAZWISKODOID(pImieNazwisko),
+    hufiec = pHufiec,
+    typ_druzyny = pTyp
+    WHERE nazwa = pStaraNazwa AND numer = TO_NUMBER(pStaryNumer);
+  END IF;
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, 'NO OPERATION');
+  END IF;
+END;
 --gdfgfdgdf
 
 CREATE OR REPLACE PROCEDURE STOPNIE_INSTRUKTORSKIE_INS
