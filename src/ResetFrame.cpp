@@ -58,5 +58,7 @@ void ResetFrame::onOK(wxCommandEvent & event)
         }
     }
 
+    this->Close();
     dial2->ShowModal();
+    
 }
