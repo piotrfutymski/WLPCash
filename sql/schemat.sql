@@ -412,7 +412,7 @@ CREATE OR REPLACE PROCEDURE dodajInstruktora
   vID INSTRUKTORZY.ID_INSTR%TYPE;
 BEGIN
   vID := instruktorzy_id_seq.nextval;
-  IF pHufiec != '' THEN
+  IF length(pHufiec) != 0 THEN
     INSERT INTO INSTRUKTORZY(id_instr, imie, nazwisko, email, rozkaz_przyjecia, st_instr, st_harc, hufiec)
     VALUES (vID, pImie, pNazwisko, pEmail, pRozkaz, pStInstr, pStHarc, pHufiec);
   ELSE
@@ -467,7 +467,7 @@ IF vStaryHufiec != pHufiec THEN
   END IF;
 END IF;
 
-IF pHufiec = '' THEN
+IF length(pHufiec) = 0 THEN
   UPDATE INSTRUKTORZY
   SET imie = pImie,
   nazwisko = pNazwisko,
@@ -506,7 +506,7 @@ CREATE OR REPLACE PROCEDURE dodajDruzyne
 vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
   vID :=IMIENAZWISKODOID(pImieNazwisko);
-  IF pPatron = '' THEN
+  IF length(pPatron) = 0 THEN
     INSERT INTO Druzyny(nazwa, numer, probna, druzynowy, hufiec, typ_druzyny)
     VALUES (pNazwa, TO_NUMBER(pNumer), pProbna, vID, pHufiec, pTyp);
   ELSE
@@ -548,7 +548,7 @@ CREATE OR REPLACE PROCEDURE modyfikujDruzyne
 vID INSTRUKTORZY.id_instr%TYPE;
 BEGIN
   vID := IMIENAZWISKODOID(pImieNazwisko);
-  IF pPatron = '' THEN
+  IF length(pPatron) = 0 THEN
     UPDATE DRUZYNY
     SET nazwa = pNazwa,
     numer = TO_NUMBER(pNumer),
