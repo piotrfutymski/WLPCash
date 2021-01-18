@@ -137,8 +137,8 @@ MainFrame::MainFrame()
 
     //---
 
-    _instruktorzyFrame = std::make_unique<TableFrame>(std::wstring(L"Instruktorzy"), 950, wxWindowID(ID::INSTRUKTORZY)+1000, 
-    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imię",100},{L"Nazwisko",100},{L"E-mail",300},{L"Rozkaz",100},{L"St. instr.",100},{L"St. harcerski",100},{L"Hufiec",100}}), TableFrame::TableStyle::Special);
+    _instruktorzyFrame = std::make_unique<TableFrame>(std::wstring(L"Instruktorzy"), 1000, wxWindowID(ID::INSTRUKTORZY)+1000, 
+    std::vector<std::pair<std::wstring,int>>({{L"ID",50},{L"Imię",100},{L"Nazwisko",150},{L"E-mail",300},{L"Rozkaz",100},{L"St. instr.",100},{L"St. harcerski",100},{L"Hufiec",100}}), TableFrame::TableStyle::Special);
     
     _instruktorzyFrame->setOnModify([&](const std::vector<std::wstring> & instruktor){
         if(!_instruktorForm->isOpened())
